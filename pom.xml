@@ -1,0 +1,126 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.3.5.RELEASE</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>ca.canada.ised.wet.cdts</groupId>
+  <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
+  <!-- Version matches the WET version supported by CDTS. -->
+  <version>4.0.21-SNAPSHOT</version>
+
+  <name>WET CDTS Spring Boot Thymeleaf Starter</name>
+  <packaging>jar</packaging>
+
+  <properties>
+    <java.version>1.7</java.version>
+    <spring.boot.version>1.3.5.RELEASE</spring.boot.version>
+    <commons.lang3.version>3.4</commons.lang3.version>
+    <glassfish.version>3.1.1</glassfish.version>
+  </properties>
+
+  <distributionManagement>
+    <repository>
+      <id>${distributionManagement-internal-released-id}</id>
+      <url>${distributionManagement-internal-released-url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${distributionManagement-internal-snapshots-id}</id>
+      <url>${distributionManagement-internal-snapshots-url}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <!-- Import dependency management from Spring Boot -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring.boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <!-- Excluding embedded Tomcat. -->
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.tomcat.embed</groupId>
+          <artifactId>tomcat-embed-el</artifactId>
+        </exclusion>
+        <!-- doesn't play well on WAS -->
+        <!-- https://github.com/spring-projects/spring-boot/issues/2149 -->
+        <!-- http://www.leveluplunch.com/blog/2014/05/31/spring-logging-issues-websphere/ -->
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.servlet</artifactId>
+      <version>${glassfish.version}</version>
+    </dependency>
+    <!-- Thymeleaf. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+
+    <!-- Commons lang for things like equals, hashcode, etc. -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons.lang3.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

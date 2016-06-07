@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+ca.canada.ised.wet.cdts.WetCdtsSpringBootThymeleafConfig
