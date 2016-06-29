@@ -521,7 +521,7 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
         }
         if (keys.contains("cdn.contact.link.french.url")) {
             cdnSettings
-                .setContactLinkEnglishUrl(messageSource.getMessage("cdn.contact.link.french.url", null, Locale.CANADA));
+                .setContactLinkFrenchUrl(messageSource.getMessage("cdn.contact.link.french.url", null, Locale.CANADA));
         }
         if (keys.contains("cdn.terms.link.english.url")) {
             cdnSettings
