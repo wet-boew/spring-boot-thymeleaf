@@ -12,7 +12,7 @@
   <groupId>ca.canada.ised.wet.cdts</groupId>
   <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
   <!-- Version matches the WET version supported by CDTS. -->
-  <version>4.0.21-SNAPSHOT</version>
+  <version>4.0.21.1-SNAPSHOT</version>
 
   <name>WET CDTS Spring Boot Thymeleaf Starter</name>
   <packaging>jar</packaging>

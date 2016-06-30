@@ -14,7 +14,7 @@ This is a Spring Boot Starter that uses Thymeleaf to implement CDTS.
     <dependency>
       <groupId>ca.canada.ised.wet.cdts</groupId>
       <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
-      <version>1.0.0</version>
+      <version>4.0.21.1</version>
     </dependency>
 
 2) Add the WETTemplateInterceptor to your applications list of interceptors.
