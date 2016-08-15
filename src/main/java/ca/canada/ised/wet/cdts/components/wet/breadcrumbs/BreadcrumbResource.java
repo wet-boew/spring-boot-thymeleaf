@@ -2,6 +2,8 @@ package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 
 /**
  * The Enum BreadcrumbResource is used to get property values from the bread crumbs resource file.
+ *
+ * @author Frank Giusto
  */
 public enum BreadcrumbResource {
 

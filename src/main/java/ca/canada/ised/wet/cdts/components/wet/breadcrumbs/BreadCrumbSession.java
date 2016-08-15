@@ -10,40 +10,41 @@ import org.springframework.stereotype.Component;
 
 /**
  * The Class BreadCrumbSession hold the breadcrumbs for a user session.
+ *
+ * @author Frank Giusto
  */
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BreadCrumbSession implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** The bread crumb map contains the breadcrumbs. */
-	private Map<String, BreadCrumb> breadCrumbMap;
+    /** The bread crumb map contains the breadcrumbs. */
+    private Map<String, BreadCrumb> breadCrumbMap;
 
-	/**
-	 * Instantiates a new bread crumb session map.
-	 */
-	public BreadCrumbSession() {
-		breadCrumbMap = new LinkedHashMap<>();
-	}
+    /**
+     * Instantiates a new bread crumb session map.
+     */
+    public BreadCrumbSession() {
+        breadCrumbMap = new LinkedHashMap<>();
+    }
 
-	/**
-	 * Gets the bread crumb map.
-	 *
-	 * @return the bread crumb map
-	 */
-	public Map<String, BreadCrumb> getBreadCrumbMap() {
-		return breadCrumbMap;
-	}
+    /**
+     * Gets the bread crumb map.
+     *
+     * @return the bread crumb map
+     */
+    public Map<String, BreadCrumb> getBreadCrumbMap() {
+        return breadCrumbMap;
+    }
 
-	/**
-	 * Sets the bread crumb map.
-	 *
-	 * @param breadCrumbMap
-	 *            the bread crumb map
-	 */
-	public void setBreadCrumbMap(Map<String, BreadCrumb> breadCrumbMap) {
-		this.breadCrumbMap = breadCrumbMap;
-	}
+    /**
+     * Sets the bread crumb map.
+     *
+     * @param breadCrumbMap the bread crumb map
+     */
+    public void setBreadCrumbMap(Map<String, BreadCrumb> breadCrumbMap) {
+        this.breadCrumbMap = breadCrumbMap;
+    }
 
 }
