@@ -2,6 +2,8 @@ package ca.canada.ised.wet.cdts.components.wet.config;
 
 /**
  * The Enum WETModelKey contains attribute names stored and the spring model and referenced on the WET templates.
+ *
+ * @author Frank Giusto
  */
 public enum WETModelKey {
 
@@ -38,6 +40,9 @@ public enum WETModelKey {
 
 	/** The canada home key is for www.canada.ca . */
 	CANADA_HOME("canadaHome"),
+
+	/** The department home key. */
+	DEPARTMENT_HOME("departmentHome"),
 
 	/** The page section menu key hold the section menu for a specific page. */
 	PAGE_SECTION_MENU("pageSectionMenu");

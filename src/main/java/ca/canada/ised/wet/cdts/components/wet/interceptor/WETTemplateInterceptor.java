@@ -39,6 +39,8 @@ import ca.canada.ised.wet.cdts.components.wet.utils.Language;
 /**
  * The Class WETTemplateInterceptor populates the Spring Thymeleaf WET Template with properties from the cdn.properties
  * file or any page level overrides.
+ *
+ * @author Frank Giusto
  */
 public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
 
@@ -65,9 +67,9 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private MessageSource applicationMessageSource;
 
-    /** The breadcrumbs bean. */
+    /** The breadcrumbs service. */
     @Autowired
-    private BreadcrumbService breadcrumbsBean;
+    private BreadcrumbService breadcrumbsService;
 
     /** The template resource. */
     private final Map<String, WETResourceBundle> templateResource = new HashMap<>();
@@ -118,7 +120,7 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
             setSideMenu(modelAndView);
 
             // Breadcrumbs
-            setBreadCrumbs(cdnSettings, modelAndView, request);
+            setBreadCrumbs(modelAndView, request);
 
             // Leaving Secure Site
             getLeavingSecureSiteWarning(cdnSettings, modelAndView);
@@ -215,17 +217,16 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     /**
      * Sets the bread crumbs for the requested view.
      *
-     * @param cdnSettings the cdn settings
      * @param modelAndView the model and view
      * @param request the request
      */
-    private void setBreadCrumbs(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
+    private void setBreadCrumbs(ModelAndView modelAndView, HttpServletRequest request) {
 
         StringBuilder viewParameters = new StringBuilder();
         viewParameters.append(request.getRequestURI()).append(getRequestParameters(request).toString());
 
-        breadcrumbsBean.buildBreadCrumbs(modelAndView.getViewName(), viewParameters.toString());
-        modelAndView.addObject(WETModelKey.BREADCRUMBS.wetAttributeName(), breadcrumbsBean.getBreadCrumbList());
+        breadcrumbsService.buildBreadCrumbs(modelAndView.getViewName(), viewParameters.toString());
+        modelAndView.addObject(WETModelKey.BREADCRUMBS.wetAttributeName(), breadcrumbsService.getBreadCrumbList());
     }
 
     /**

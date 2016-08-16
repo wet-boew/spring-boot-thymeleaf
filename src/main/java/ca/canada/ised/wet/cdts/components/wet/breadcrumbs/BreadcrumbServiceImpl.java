@@ -10,10 +10,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,8 @@ import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
 
 /**
  * The Class BreadcrumbServiceImpl is responsible for building and retrieving application breadcrumbs.
+ *
+ * @author Frank Giusto
  */
 @Component
 public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
@@ -33,6 +37,9 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
      */
     private static final long serialVersionUID = 1L;
 
+    /** The position Constant for the LANDING_PAGE_BREADCRUMB. */
+    private static final int LANDING_PAGE_BREADCRUMB = 2;
+
     /** Logging instance. */
     private static final Logger LOG = LoggerFactory.getLogger(BreadcrumbServiceImpl.class);
 
@@ -40,6 +47,13 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
      * The Constant JUST_HOME_AND_CURRENT_BREADCRUMB which breadcrumbs are to be returned from the breadcrumb map.
      */
     private static final int JUST_HOME_AND_CURRENT_BREADCRUMB = 2;
+
+    /**
+     * The show landing page breadcrumb property of true states that the application will always show the landing page
+     * breadcrumb. This property can be overridden in the appliation.properties. Default is false.
+     */
+    @Value("${show.landing.page.breadcrumb:true}")
+    private Boolean showLandingPageBreadcrumb;
 
     /** The bread session. */
     @Autowired
@@ -53,12 +67,14 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
     private static WETResourceBundle breadcrumbMessageSource = getBreadCrumbBundle();
 
     @Override
-    public List<BreadCrumb> getBreadCrumbList() {
+    public List<Object> getBreadCrumbList() {
 
         if (breadcrumbSession.getBreadCrumbMap().size() == 0) {
             LOG.error("No Breadcrumbs exist");
             return new ArrayList<>();
         }
+        String lang = applicationMessageSource.getMessage("lang", null, Locale.CANADA);
+
         // return all but the last breadcrumb which is the current page.
         List<BreadCrumb> displayedBreadCrumbList = new ArrayList<>();
 
@@ -80,7 +96,60 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
                 break;
             }
         }
-        return displayedBreadCrumbList;
+
+        return adjustForBreadcrumbLength(displayedBreadCrumbList);
+    }
+
+    /**
+     * Adjust for bread crumb length. Do not show all breadcrumbs. Show and elliptical to indicate this.
+     *
+     * @param displayedBreadCrumbList the displayed bread crumb list
+     * @return the shortened bread crumb list
+     */
+    private List<Object> adjustForBreadcrumbLength(List<BreadCrumb> displayedBreadCrumbList) {
+        List<Object> breadCrumbList = new ArrayList<>();
+
+        int breadcrumbIndex = 0;
+
+        boolean ellipticalAdded = false;
+        for (BreadCrumb breadCrumb : displayedBreadCrumbList) {
+            breadcrumbIndex++;
+
+            if (breadcrumbIndex > 1 && !ellipticalAdded && breadcrumbIndex < displayedBreadCrumbList.size()) {
+                BreadCrumbTitle breadCrumbShort = new BreadCrumbTitle();
+                BeanUtils.copyProperties(breadCrumb, breadCrumbShort);
+
+                breadCrumbShort.setTitleFR("...");
+                breadCrumbShort.setTitleEN("...");
+                breadCrumbShort.setTitle("...");
+                breadCrumbList.add(breadCrumbShort);
+                ellipticalAdded = true;
+
+            } else if (ellipticalAdded) {
+
+                if (showLandingPageBreadcrumb) {
+                    breadCrumbList.add(checkAcronym(displayedBreadCrumbList.get(LANDING_PAGE_BREADCRUMB)));
+                } else {
+                    breadCrumbList.add(checkAcronym(displayedBreadCrumbList.get(displayedBreadCrumbList.size() - 1)));
+                }
+                break;
+
+            } else {
+                breadCrumbList.add(checkAcronym(breadCrumb));
+            }
+        }
+        return breadCrumbList;
+    }
+
+    private Object checkAcronym(BreadCrumb breadCrumb) {
+
+        if (StringUtils.isEmpty(breadCrumb.getAcronym())) {
+            BreadCrumbLink breadCrumbLink = new BreadCrumbLink();
+            BeanUtils.copyProperties(breadCrumb, breadCrumbLink);
+            return breadCrumbLink;
+        }
+
+        return breadCrumb;
     }
 
     @Override
@@ -89,7 +158,8 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
         Set<String> keys = breadcrumbMessageSource.getKeys(breadcrumbMessageSource.getBasename(),
             LocaleContextHolder.getLocale());
         if (CollectionUtils.isEmpty(keys)) {
-            LOG.warn("No breadcrumbs.properties found in folder defined by spring.thymeleaf.prefix");
+            // User may have chosen not to include breadcrumbs in their application.
+            LOG.info("No breadcrumbs.properties found in folder defined by spring.thymeleaf.prefix");
             // Home still required.
             createBreadCrumbList();
             return;
@@ -172,14 +242,19 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
     private Map<String, BreadCrumb> createBreadCrumbList() {
 
         breadcrumbSession = new BreadCrumbSession();
-        BreadCrumb breadCrumb = new BreadCrumb();
 
+        BreadCrumb breadCrumb = new BreadCrumb();
         breadCrumb.setTitleEN(applicationMessageSource.getMessage("home", null, Locale.CANADA));
         breadCrumb.setTitleFR(applicationMessageSource.getMessage("home", null, Locale.CANADA_FRENCH));
-        breadCrumb.setAcronym("CDN");
         breadCrumb.setViewName(WETModelKey.CANADA_HOME.name());
-
         getBreadcrumbMap().put(WETModelKey.CANADA_HOME.name(), breadCrumb);
+
+        breadCrumb = new BreadCrumb();
+        breadCrumb.setTitleEN(applicationMessageSource.getMessage("department.home", null, Locale.CANADA));
+        breadCrumb.setTitleFR(applicationMessageSource.getMessage("department.home", null, Locale.CANADA_FRENCH));
+        breadCrumb.setViewName(WETModelKey.DEPARTMENT_HOME.name());
+        getBreadcrumbMap().put(WETModelKey.DEPARTMENT_HOME.name(), breadCrumb);
+
         return getBreadcrumbMap();
     }
 
@@ -192,7 +267,11 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
     private String setCanadaHomeUrl(String language) {
 
         StringBuilder homeLink = new StringBuilder();
-        homeLink.append("http://www.canada.ca/").append(language).append("/index.html");
+        if ("en".equals(language)) {
+            homeLink.append(applicationMessageSource.getMessage("home.url", null, Locale.CANADA));
+        } else {
+            homeLink.append(applicationMessageSource.getMessage("home.url", null, Locale.CANADA_FRENCH));
+        }
 
         return homeLink.toString();
     }
@@ -224,11 +303,17 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
             localeBreadCrumb.setTitle(breadCrumb.getTitleFR());
             if (breadcrumbKey.equals(WETModelKey.CANADA_HOME.name())) {
                 localeBreadCrumb.setHref(setCanadaHomeUrl(Locale.CANADA_FRENCH.getLanguage()));
+            } else if (breadcrumbKey.equals(WETModelKey.DEPARTMENT_HOME.name())) {
+                localeBreadCrumb
+                    .setHref(applicationMessageSource.getMessage("department.home.url", null, Locale.CANADA_FRENCH));
             }
         } else {
             localeBreadCrumb.setTitle(breadCrumb.getTitleEN());
             if (breadcrumbKey.equals(WETModelKey.CANADA_HOME.name())) {
                 localeBreadCrumb.setHref(setCanadaHomeUrl(Locale.CANADA.getLanguage()));
+            } else if (breadcrumbKey.equals(WETModelKey.DEPARTMENT_HOME.name())) {
+                localeBreadCrumb
+                    .setHref(applicationMessageSource.getMessage("department.home.url", null, Locale.CANADA));
             }
         }
         return localeBreadCrumb;
