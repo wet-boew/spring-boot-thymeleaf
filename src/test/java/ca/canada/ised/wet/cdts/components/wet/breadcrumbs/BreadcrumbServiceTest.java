@@ -1,51 +1,52 @@
 package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import ca.canada.ised.wet.cdts.components.wet.interceptor.WETTemplateInterceptor;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.util.Assert;
 
 /**
  * @author fgiusto
  *
  */
-public class BreadcrumbServiceTest {
-
-    /** The breadcrumbs service. */
-    @Autowired
-    private WETTemplateInterceptor cdnTemplateInterceptor;
+public class BreadcrumbServiceTest extends AbstractMockMvcTest {
 
     @Autowired
     private BreadcrumbService breadcrumbsService;
 
     /** */
     @Test
-    public void dummyTestPleaseReplaceMe() {
+    public void breadcrumbEnglish() {
 
-        // breadcrumbsService.buildBreadCrumbs("page1", "pageReq=");
+        LocaleContextHolder.setLocale(Locale.CANADA);
 
-        List<Object> bc = new ArrayList<>();
-        BreadCrumb bcr = new BreadCrumb();
-        bcr.setHref("http://google.ca");
-        bcr.setTitleEN("fgg");
-        bc.add(bcr);
-        BreadCrumbTitle bcs = new BreadCrumbTitle();
-        bcs.setTitleEN("fgg2");
+        breadcrumbsService.buildBreadCrumbs("home", "pageReq1=");
+        List<Object> bcList = breadcrumbsService.getBreadCrumbList();
 
-        bc.add(bcs);
+        Assert.isTrue(bcList.size() == 1);
 
-        System.out.println(bc.toString());
+        BreadCrumbLink breadcrumb = (BreadCrumbLink) bcList.get(0);
+        Assert.isTrue("Home".equals(breadcrumb.getTitle()));
+        Assert.isTrue("http://www.canada.ca/en/index.html".equals(breadcrumb.getHref()));
 
-        for (Object o : bc) {
-            System.out.println(o.toString());
-        }
+    }
 
-        // List<BreadCrumb> bcList = breadcrumbsService.getBreadCrumbList();
+    @Test
+    public void breadcrumbFrench() {
 
-        // Assert.isTrue(!CollectionUtils.isEmpty(bcList));
+        LocaleContextHolder.setLocale(Locale.CANADA_FRENCH);
+
+        breadcrumbsService.buildBreadCrumbs("home", "pageReq1=");
+        List<Object> bcList = breadcrumbsService.getBreadCrumbList();
+
+        BreadCrumbLink breadcrumb = (BreadCrumbLink) bcList.get(0);
+        Assert.isTrue("Accueil".equals(breadcrumb.getTitle()));
+        Assert.isTrue("http://www.canada.ca/fr/index.html".equals(breadcrumb.getHref()));
+
+        Assert.isTrue(bcList.size() == 1);
     }
 
 }
