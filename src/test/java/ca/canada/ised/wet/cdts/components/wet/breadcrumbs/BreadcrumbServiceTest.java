@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.Assert;
 
+import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
+
 /**
  * @author fgiusto
  *
@@ -21,6 +23,22 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
 
     @Autowired
     private BreadcrumbService breadcrumbsService;
+
+    /** The breadcrumb message source. */
+    private static WETResourceBundle breadcrumbMessageSource = getBreadCrumbBundle();
+
+    /**
+     * Gets the bread crumb bundle.
+     *
+     * @return the bread crumb bundle
+     */
+    private static WETResourceBundle getBreadCrumbBundle() {
+
+        WETResourceBundle breadcrumbMessageSource = new WETResourceBundle();
+        breadcrumbMessageSource.setBasename(BreadcrumbResource.NAME.value());
+
+        return breadcrumbMessageSource;
+    }
 
     /** */
     @Test
@@ -51,7 +69,7 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
         Assert.isTrue("Accueil".equals(breadcrumb.getTitle()));
         Assert.isTrue("http://www.canada.ca/fr/index.html".equals(breadcrumb.getHref()));
 
-        Assert.isTrue(bcList.size() == 2);
+        Assert.isTrue(bcList.size() == 3);
     }
 
     @Test
@@ -71,7 +89,7 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
     public void breadcrumbNoHome() {
 
         breadcrumbsService.buildBreadCrumbs("greeting", "pageReq1");
-        // breadcrumbsService.buildBreadCrumbs("page2", "pageReq2");
+        breadcrumbsService.buildBreadCrumbs("page2", "pageReq2");
         List<Object> bcList = breadcrumbsService.getBreadCrumbList();
 
         LOG.info(" ************** Breadcrumbs ***************");
@@ -90,7 +108,19 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
         LOG.info(" *****************************");
         // Assert.isTrue(bcList.size() == 2);
     }
-    // TODO test invalid breadcrumbs.properties....
-    // TODO test when there are no breadcrumbs.properties which is valid.
 
+    @Test
+    public void validateBreadCrumbProperties() {
+        // Initialize-Validate Bread Crumbs
+        String rootKey = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null, Locale.CANADA);
+
+        String rootKey2 = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null,
+            Locale.CANADA_FRENCH);
+
+        Assert.isTrue(null != rootKey && rootKey.equals(rootKey2));
+
+        Assert.isTrue(null != breadcrumbMessageSource.getMessage(rootKey, null, Locale.CANADA));
+        Assert.isTrue(null != breadcrumbMessageSource.getMessage(rootKey2, null, Locale.CANADA_FRENCH));
+
+    }
 }

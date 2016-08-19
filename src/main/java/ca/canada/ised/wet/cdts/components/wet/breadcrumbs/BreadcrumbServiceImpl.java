@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import ca.canada.ised.wet.cdts.components.wet.config.WETModelKey;
@@ -89,11 +90,12 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
         if (CollectionUtils.isEmpty(keys)) {
             // User may have chosen not to include breadcrumbs in their application.
             LOG.info("No breadcrumbs.properties found in folder defined by spring.thymeleaf.prefix");
-            // Home still required.
+            // Home / Department Home still required.
             createBreadCrumbList();
             return;
         }
-        String rootKey = breadcrumbMessageSource.getMessage("bc.root.key", null, LocaleContextHolder.getLocale());
+        // Initialize-Validate Bread Crumbs
+        String rootKey = validateBreadCrumbProperties();
 
         if (CollectionUtils.isEmpty(getBreadcrumbMap()) || rootKey.equals(breadcrumbKey(currentView))) {
             createBreadCrumbList();
@@ -103,7 +105,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
                     breadcrumbMessageSource), currentView);
             }
         }
-
+        // Populate New Bread Crumb
         if (keys.contains(breadcrumbKey(currentView))) {
             if (getBreadcrumbMap().containsKey(currentView)) {
                 if (!rootKey.equals(breadcrumbKey(currentView))) {
@@ -114,8 +116,12 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
                 // create new breadcrumb for requested view
                 BreadCrumb newBreadCrumb = createBreadCrumb(currentView, requestURL,
                     getBreadcrumbAcronym(keys, currentView), breadcrumbMessageSource);
-
                 this.addBreadCrumb(newBreadCrumb, currentView);
+            }
+        } else {
+            if (!getBreadcrumbMap().containsKey(BreadcrumbResource.PLACEHOLDER.value())) {
+                this.addBreadCrumb(new BreadCrumb(BreadcrumbResource.PLACEHOLDER.value()),
+                    BreadcrumbResource.PLACEHOLDER.value());
             }
         }
     }
@@ -143,6 +149,26 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
     }
 
     /**
+     * Validate bread crumb properties. root.key and associated key for root.key value must exist.
+     *
+     * @return the string
+     */
+    private String validateBreadCrumbProperties() {
+        // Initialize-Validate Bread Crumbs
+        String rootKey = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null, Locale.CANADA);
+
+        String rootKey2 = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null,
+            Locale.CANADA_FRENCH);
+
+        Assert.isTrue(null != rootKey && rootKey.equals(rootKey2));
+
+        Assert.isTrue(null != breadcrumbMessageSource.getMessage(rootKey, null, Locale.CANADA));
+        Assert.isTrue(null != breadcrumbMessageSource.getMessage(rootKey2, null, Locale.CANADA_FRENCH));
+
+        return rootKey;
+    }
+
+    /**
      * Check application home. A bread crumb should exist for Application Home
      */
     private void checkApplicationHome() {
@@ -154,7 +180,8 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
         boolean rootKeyFound = false;
         // Make sure home page bread crumb exists. If not, user entered application on a page within the application.
         // Add a link back to the application home.
-        String rootKey = breadcrumbMessageSource.getMessage("bc.root.key", null, LocaleContextHolder.getLocale());
+        String rootKey = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null,
+            LocaleContextHolder.getLocale());
         for (BreadCrumb bc : getBreadcrumbMap().values()) {
             if (breadcrumbKey(bc.getViewName()).equals(rootKey)) {
                 rootKeyFound = true;
@@ -220,7 +247,8 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
         List<Object> breadCrumbList = new ArrayList<>();
         String rootKey = null;
         if (breadcrumbsConfigured()) {
-            rootKey = breadcrumbMessageSource.getMessage("bc.root.key", null, LocaleContextHolder.getLocale());
+            rootKey = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null,
+                LocaleContextHolder.getLocale());
         }
 
         if (fullBreadCrumbList.size() > 3) {

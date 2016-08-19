@@ -22,6 +22,15 @@ public class BreadCrumb extends BreadCrumbLink {
     }
 
     /**
+     * Instantiates a new bread crumb with a View Name.
+     *
+     * @param viewName the view name
+     */
+    public BreadCrumb(String viewName) {
+        this.setViewName(viewName);
+    }
+
+    /**
      * Sets the acronym.
      *
      * @param acronym the new acronym

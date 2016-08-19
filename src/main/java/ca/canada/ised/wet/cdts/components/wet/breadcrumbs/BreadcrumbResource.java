@@ -14,7 +14,13 @@ public enum BreadcrumbResource {
     KEY_ACRONYM(".acronym"),
 
     /** The name of the resource bundle. */
-    NAME("breadcrumbs");
+    NAME("breadcrumbs"),
+
+    /** The placeholder. */
+    PLACEHOLDER("bc.placeholder.breadcrumb"),
+
+    /** The root key. */
+    ROOT_KEY("bc.root.key");
 
     /** The value. */
     private String value;
