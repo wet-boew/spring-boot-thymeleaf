@@ -39,4 +39,11 @@ public class BreadCrumb extends BreadCrumbLink {
         return acronym;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("viewname:").append(getViewName()).append(", ").append("href:").append(getHref()).append(", title:")
+            .append(getTitle());
+        return sb.toString();
+    }
 }

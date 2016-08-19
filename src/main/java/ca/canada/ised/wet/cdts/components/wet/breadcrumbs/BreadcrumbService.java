@@ -12,6 +12,7 @@ public interface BreadcrumbService {
     /**
      * Gets the bread crumb list.
      *
+     * @param currentView the current view (requested view)
      * @return the bread crumb list
      */
     List<Object> getBreadCrumbList();

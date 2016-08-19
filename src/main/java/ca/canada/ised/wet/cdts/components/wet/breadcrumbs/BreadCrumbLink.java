@@ -59,4 +59,12 @@ public class BreadCrumbLink extends BreadCrumbTitle {
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("viewname:").append(this.viewName).append(", ").append("href:").append(this.href).append(", title:")
+            .append(getTitle());
+        return sb.toString();
+    }
 }
