@@ -26,7 +26,7 @@
     </script>
     <!-- Write external CSS elements here. Added through 'externalCssIncludes' model attribute. -->
     <!--/*/ <th:block th:each="externalCssInculde : ${externalCssIncludes}"> /*/-->
-    <link rel="stylesheet" type="text/css" data-th-href="${externalCssInculde}" />
+    <link rel="stylesheet" type="text/css" data-th-href="@{__${externalCssInculde}__}" />
     <!--/*/ </th:block> /*/-->
     <!-- Write custom CSS elements here. Added through 'cssIncludes' model attribute. -->
     <!--/*/ <th:block th:each="cssInclude : ${cssIncludes}"> /*/-->
