@@ -82,4 +82,10 @@ public class BreadCrumbTitle implements Serializable {
         this.title = title;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("title:").append(getTitle());
+        return sb.toString();
+    }
 }

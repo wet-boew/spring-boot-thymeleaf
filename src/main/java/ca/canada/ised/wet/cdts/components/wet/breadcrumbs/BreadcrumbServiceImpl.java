@@ -10,6 +10,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import ca.canada.ised.wet.cdts.components.wet.config.WETModelKey;
@@ -37,16 +40,25 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    /** The position Constant for the LANDING_PAGE_BREADCRUMB. */
-    private static final int LANDING_PAGE_BREADCRUMB = 2;
+    /** The position Constant for the APPLICATION_HOME_CRUMB. */
+    private static final int APPLICATION_HOME_CRUMB = 2;
+
+    /** The Constant LAST_BREAD_CRUMB. */
+    private static final int LAST_BREAD_CRUMB = 2;
+
+    /** The Constant HOME_BREAD_CRUMB. */
+    private static final int HOME_BREAD_CRUMB = 0;
+
+    /** The Constant DEPARTMENT_HOME_BREAD_CRUMB. */
+    private static final int DEPARTMENT_HOME_BREAD_CRUMB = 1;
 
     /** Logging instance. */
     private static final Logger LOG = LoggerFactory.getLogger(BreadcrumbServiceImpl.class);
 
     /**
-     * The Constant JUST_HOME_AND_CURRENT_BREADCRUMB which breadcrumbs are to be returned from the breadcrumb map.
+     * The Constant HOME_AND_DEPARTMENT which breadcrumbs are to be returned from the breadcrumb map.
      */
-    private static final int JUST_HOME_AND_CURRENT_BREADCRUMB = 2;
+    private static final int HOME_AND_DEPARTMENT = 2;
 
     /**
      * The show landing page breadcrumb property of true states that the application will always show the landing page
@@ -54,6 +66,9 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
      */
     @Value("${show.landing.page.breadcrumb:true}")
     private Boolean showLandingPageBreadcrumb;
+
+    @Autowired
+    private ServletContext servletContext;
 
     /** The bread session. */
     @Autowired
@@ -66,81 +81,220 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
     /** The breadcrumb message source. */
     private static WETResourceBundle breadcrumbMessageSource = getBreadCrumbBundle();
 
+    /** {@inheritDoc} */
+    @Override
+    public void buildBreadCrumbs(String currentView, String requestURL) {
+
+        Set<String> keys = breadcrumbMessageSource.getKeys(breadcrumbMessageSource.getBasename(),
+            LocaleContextHolder.getLocale());
+        if (CollectionUtils.isEmpty(keys)) {
+            // User may have chosen not to include breadcrumbs in their application.
+            LOG.info("No breadcrumbs.properties found in folder defined by spring.thymeleaf.prefix");
+            // Home / Department Home still required.
+            createBreadCrumbList();
+            return;
+        }
+        // Initialize-Validate Bread Crumbs
+        String rootKey = validateBreadCrumbProperties();
+
+        if (CollectionUtils.isEmpty(getBreadcrumbMap()) || rootKey.equals(breadcrumbKey(currentView))) {
+            createBreadCrumbList();
+            if (rootKey.equals(breadcrumbKey(currentView))) {
+                // create bread crumb for application home
+                this.addBreadCrumb(createBreadCrumb(currentView, requestURL, getBreadcrumbAcronym(keys, currentView),
+                    breadcrumbMessageSource), currentView);
+            }
+        }
+        // Populate New Bread Crumb
+        if (keys.contains(breadcrumbKey(currentView))) {
+            if (getBreadcrumbMap().containsKey(currentView)) {
+                if (!rootKey.equals(breadcrumbKey(currentView))) {
+                    // going back to page previously visited
+                    setPreviouslyVisitedBreadCrumb(currentView);
+                }
+            } else {
+                // create new breadcrumb for requested view
+                BreadCrumb newBreadCrumb = createBreadCrumb(currentView, requestURL,
+                    getBreadcrumbAcronym(keys, currentView), breadcrumbMessageSource);
+                this.addBreadCrumb(newBreadCrumb, currentView);
+            }
+        } else {
+            if (!getBreadcrumbMap().containsKey(BreadcrumbResource.PLACEHOLDER.value())) {
+                this.addBreadCrumb(new BreadCrumb(BreadcrumbResource.PLACEHOLDER.value()),
+                    BreadcrumbResource.PLACEHOLDER.value());
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
     @Override
     public List<Object> getBreadCrumbList() {
 
         if (breadcrumbSession.getBreadCrumbMap().size() == 0) {
-            LOG.error("No Breadcrumbs exist");
+            LOG.error("No Breadcrumbs exist. We at least need a Home link.");
             return new ArrayList<>();
         }
-        String lang = applicationMessageSource.getMessage("lang", null, Locale.CANADA);
-
         // return all but the last breadcrumb which is the current page.
-        List<BreadCrumb> displayedBreadCrumbList = new ArrayList<>();
+        List<BreadCrumb> breadCrumbList = new ArrayList<>();
 
-        Iterator<String> breadcrumbKeyIterator = breadcrumbSession.getBreadCrumbMap().keySet().iterator();
+        checkApplicationHome();
 
-        int breadCrumbCount = 0;
-        int secondLastBreadcrumb = getBreadcrumbMap().size() - 1;
+        Iterator<String> breadcrumbKeyIterator = getBreadcrumbMap().keySet().iterator();
 
         while (breadcrumbKeyIterator.hasNext()) {
-
             String breadcrumbKey = breadcrumbKeyIterator.next();
-            displayedBreadCrumbList
-                .add(setBreadCrumbLanguageTitle(breadcrumbKey, getBreadcrumbMap().get(breadcrumbKey)));
-            breadCrumbCount++;
-            if (getBreadcrumbMap().size() <= JUST_HOME_AND_CURRENT_BREADCRUMB) {
-                break;
-            }
-            if (breadCrumbCount == secondLastBreadcrumb) {
+            breadCrumbList.add(setBreadCrumbLanguageTitle(breadcrumbKey, getBreadcrumbMap().get(breadcrumbKey)));
+        }
+        return adjustForBreadcrumbLength(breadCrumbList);
+    }
+
+    /**
+     * Validate bread crumb properties. root.key and associated key for root.key value must exist.
+     *
+     * @return the string
+     */
+    private String validateBreadCrumbProperties() {
+        // Initialize-Validate Bread Crumbs
+        String rootKey = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null, Locale.CANADA);
+
+        String rootKey2 = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null,
+            Locale.CANADA_FRENCH);
+
+        Assert.isTrue(null != rootKey && rootKey.equals(rootKey2));
+
+        Assert.isTrue(null != breadcrumbMessageSource.getMessage(rootKey, null, Locale.CANADA));
+        Assert.isTrue(null != breadcrumbMessageSource.getMessage(rootKey2, null, Locale.CANADA_FRENCH));
+
+        return rootKey;
+    }
+
+    /**
+     * Check application home. A bread crumb should exist for Application Home
+     */
+    private void checkApplicationHome() {
+
+        if (!breadcrumbsConfigured()) {
+            // Bread crumbs are not configured for this application.
+            return;
+        }
+        boolean rootKeyFound = false;
+        // Make sure home page bread crumb exists. If not, user entered application on a page within the application.
+        // Add a link back to the application home.
+        String rootKey = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null,
+            LocaleContextHolder.getLocale());
+        for (BreadCrumb bc : getBreadcrumbMap().values()) {
+            if (breadcrumbKey(bc.getViewName()).equals(rootKey)) {
+                rootKeyFound = true;
                 break;
             }
         }
+        if (!rootKeyFound) {
+            insertHomePage(rootKey);
+        }
+    }
 
-        return adjustForBreadcrumbLength(displayedBreadCrumbList);
+    /**
+     * Insert home page. Add an Application Home breadcrumb if one doesn't exist.
+     *
+     * @param rootKey the root key
+     */
+    private void insertHomePage(String rootKey) {
+
+        Map<String, BreadCrumb> ajustedBreadCrumbList = new LinkedHashMap<>();
+
+        if (getBreadcrumbMap().size() == HOME_AND_DEPARTMENT) {
+            getBreadcrumbMap().put(extractView(rootKey),
+                createBreadCrumb(extractView(rootKey), servletContext.getContextPath(), "", breadcrumbMessageSource));
+            return;
+        }
+
+        Collection<BreadCrumb> crumbs = getBreadcrumbMap().values();
+        Iterator<BreadCrumb> iterator = crumbs.iterator();
+
+        int idx = 0;
+        while (iterator.hasNext()) {
+            BreadCrumb breadCrumb = iterator.next();
+            if (idx == HOME_AND_DEPARTMENT) {
+                ajustedBreadCrumbList.put(extractView(rootKey), createBreadCrumb(extractView(rootKey),
+                    servletContext.getContextPath(), "", breadcrumbMessageSource));
+            }
+            ajustedBreadCrumbList.put(breadCrumb.getViewName(), breadCrumb);
+            idx++;
+        }
+
+        breadcrumbSession = new BreadCrumbSession();
+        getBreadcrumbMap().putAll(ajustedBreadCrumbList);
+    }
+
+    /**
+     * Extract view. Get the spring view name based on the breadcrumb key.
+     *
+     * @param key the key
+     * @return the string
+     */
+    private String extractView(String key) {
+
+        return key.substring(key.indexOf(".") + 1);
     }
 
     /**
      * Adjust for bread crumb length. Do not show all breadcrumbs. Show and elliptical to indicate this.
      *
-     * @param displayedBreadCrumbList the displayed bread crumb list
+     * @param fullBreadCrumbList the full bread crumb list
      * @return the shortened bread crumb list
      */
-    private List<Object> adjustForBreadcrumbLength(List<BreadCrumb> displayedBreadCrumbList) {
+    private List<Object> adjustForBreadcrumbLength(List<BreadCrumb> fullBreadCrumbList) {
         List<Object> breadCrumbList = new ArrayList<>();
+        String rootKey = null;
+        if (breadcrumbsConfigured()) {
+            rootKey = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null,
+                LocaleContextHolder.getLocale());
+        }
 
-        int breadcrumbIndex = 0;
-
-        boolean ellipticalAdded = false;
-        for (BreadCrumb breadCrumb : displayedBreadCrumbList) {
-            breadcrumbIndex++;
-
-            if (breadcrumbIndex > 1 && !ellipticalAdded && breadcrumbIndex < displayedBreadCrumbList.size()) {
-                BreadCrumbTitle breadCrumbShort = new BreadCrumbTitle();
-                BeanUtils.copyProperties(breadCrumb, breadCrumbShort);
-
-                breadCrumbShort.setTitleFR("...");
-                breadCrumbShort.setTitleEN("...");
-                breadCrumbShort.setTitle("...");
-                breadCrumbList.add(breadCrumbShort);
-                ellipticalAdded = true;
-
-            } else if (ellipticalAdded) {
-
-                if (showLandingPageBreadcrumb) {
-                    breadCrumbList.add(checkAcronym(displayedBreadCrumbList.get(LANDING_PAGE_BREADCRUMB)));
-                } else {
-                    breadCrumbList.add(checkAcronym(displayedBreadCrumbList.get(displayedBreadCrumbList.size() - 1)));
-                }
-                break;
-
+        if (fullBreadCrumbList.size() > 3) {
+            BreadCrumbLink breadcrumb = fullBreadCrumbList.get(fullBreadCrumbList.size() - LAST_BREAD_CRUMB);
+            if (!breadcrumbsConfigured() || breadcrumb.getViewName().equals(extractView(rootKey))) {
+                buildEclipticalCrumb(breadCrumbList, fullBreadCrumbList);
+                breadCrumbList.add(fullBreadCrumbList.get(APPLICATION_HOME_CRUMB));
             } else {
-                breadCrumbList.add(checkAcronym(breadCrumb));
+                if (showLandingPageBreadcrumb) {
+                    buildEclipticalCrumb(breadCrumbList, fullBreadCrumbList);
+                    breadCrumbList.add(fullBreadCrumbList.get(APPLICATION_HOME_CRUMB));
+                } else {
+                    buildEclipticalCrumb(breadCrumbList, fullBreadCrumbList);
+                    breadCrumbList.add(fullBreadCrumbList.get(fullBreadCrumbList.size() - LAST_BREAD_CRUMB));
+                }
             }
+        } else {
+            breadCrumbList.add(checkAcronym(fullBreadCrumbList.get(HOME_BREAD_CRUMB)));
+            breadCrumbList.add(checkAcronym(fullBreadCrumbList.get(DEPARTMENT_HOME_BREAD_CRUMB)));
         }
         return breadCrumbList;
     }
 
+    /**
+     * Builds the ecliptical crumb. The bread crumb ... indicates that some breadcrumbs are not shown.
+     *
+     * @param breadCrumbList the bread crumb list
+     * @param displayedBreadCrumbList the displayed bread crumb list
+     */
+    private void buildEclipticalCrumb(List<Object> breadCrumbList, List<BreadCrumb> displayedBreadCrumbList) {
+
+        breadCrumbList.add(checkAcronym(displayedBreadCrumbList.get(HOME_BREAD_CRUMB)));
+
+        BreadCrumbTitle breadCrumbShort = new BreadCrumbTitle();
+        breadCrumbShort.setTitleFR("...");
+        breadCrumbShort.setTitleEN("...");
+        breadCrumbShort.setTitle("...");
+        breadCrumbList.add(breadCrumbShort);
+    }
+
+    /**
+     * Check acronym. Add an Acronymn to the breadcrumb if one was configured.
+     *
+     * @param breadCrumb the bread crumb
+     * @return the object
+     */
     private Object checkAcronym(BreadCrumb breadCrumb) {
 
         if (StringUtils.isEmpty(breadCrumb.getAcronym())) {
@@ -152,35 +306,17 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
         return breadCrumb;
     }
 
-    @Override
-    public void buildBreadCrumbs(String currentView, String requestURL) {
-
-        Set<String> keys = breadcrumbMessageSource.getKeys(breadcrumbMessageSource.getBasename(),
-            LocaleContextHolder.getLocale());
-        if (CollectionUtils.isEmpty(keys)) {
-            // User may have chosen not to include breadcrumbs in their application.
-            LOG.info("No breadcrumbs.properties found in folder defined by spring.thymeleaf.prefix");
-            // Home still required.
-            createBreadCrumbList();
-            return;
+    /**
+     * Breadcrumbs configured. Check to see if bread crumbs have been configured in application.
+     *
+     * @return true, if successful
+     */
+    private boolean breadcrumbsConfigured() {
+        if (CollectionUtils.isEmpty(
+            breadcrumbMessageSource.getKeys(breadcrumbMessageSource.getBasename(), LocaleContextHolder.getLocale()))) {
+            return false;
         }
-        String rootKey = breadcrumbMessageSource.getMessage("bc.root.key", null, LocaleContextHolder.getLocale());
-
-        if (CollectionUtils.isEmpty(getBreadcrumbMap()) || rootKey.equals(breadcrumbKey(currentView))) {
-            createBreadCrumbList();
-        }
-        if (keys.contains(breadcrumbKey(currentView))) {
-            if (getBreadcrumbMap().containsKey(currentView)) {
-                // going back to page previously visited
-                setPreviouslyVisitedBreadCrumb(currentView);
-            } else {
-                // create new breadcrumb for requested view
-                BreadCrumb newBreadCrumb = createBreadCrumb(currentView, requestURL,
-                    getBreadcrumbAcronym(keys, currentView), breadcrumbMessageSource);
-
-                this.addBreadCrumb(newBreadCrumb, currentView);
-            }
-        }
+        return true;
     }
 
     /**

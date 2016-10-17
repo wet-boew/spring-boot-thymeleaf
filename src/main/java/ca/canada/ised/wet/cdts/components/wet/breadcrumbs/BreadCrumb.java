@@ -22,6 +22,15 @@ public class BreadCrumb extends BreadCrumbLink {
     }
 
     /**
+     * Instantiates a new bread crumb with a View Name.
+     *
+     * @param viewName the view name
+     */
+    public BreadCrumb(String viewName) {
+        this.setViewName(viewName);
+    }
+
+    /**
      * Sets the acronym.
      *
      * @param acronym the new acronym
@@ -39,4 +48,11 @@ public class BreadCrumb extends BreadCrumbLink {
         return acronym;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("viewname:").append(getViewName()).append(", ").append("href:").append(getHref()).append(", title:")
+            .append(getTitle());
+        return sb.toString();
+    }
 }
