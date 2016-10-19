@@ -59,6 +59,10 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     @Value("${spring.thymeleaf.prefix}")
     private String thymeleafFolder;
 
+    /** The show exit transaction link. This can be turned off in your application.properties */
+    @Value("${show.wet.exit.transaction:true}")
+    private Boolean showExitTransaction;
+
     /** The locale resolver. */
     @Autowired
     private LocaleResolver localeResolver;
@@ -203,6 +207,10 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
 
         // TODO It would be nice to do this only for pages using Transaction
         // layouts.
+        if (!showExitTransaction) {
+            modelAndView.addObject(WETModelKey.EXIT_TRANSACTION.wetAttributeName(), "");
+            return;
+        }
         List<ExitTransaction> exitTransactionList = new ArrayList<>();
         ExitTransaction exitTransaction = new ExitTransaction();
         exitTransaction.setHref(request.getContextPath() + cdnSettings.getExitTransactionLinkUrl());
