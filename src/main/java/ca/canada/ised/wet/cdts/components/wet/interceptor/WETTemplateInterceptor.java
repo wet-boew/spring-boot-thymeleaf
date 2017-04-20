@@ -19,11 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.BreadCrumbs;
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.BreadcrumbService;
 import ca.canada.ised.wet.cdts.components.wet.config.WETModelKey;
 import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
@@ -37,542 +39,594 @@ import ca.canada.ised.wet.cdts.components.wet.sidemenu.SideMenuConfig;
 import ca.canada.ised.wet.cdts.components.wet.utils.Language;
 
 /**
- * The Class WETTemplateInterceptor populates the Spring Thymeleaf WET Template with properties from the cdn.properties
- * file or any page level overrides.
+ * The Class WETTemplateInterceptor populates the Spring Thymeleaf WET Template
+ * with properties from the cdn.properties file or any page level overrides.
  *
  * @author Frank Giusto
  */
 public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
 
-    /** Logging instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(WETTemplateInterceptor.class);
+	/** Logging instance. */
+	private static final Logger LOG = LoggerFactory.getLogger(WETTemplateInterceptor.class);
 
-    /** The default cdn settings. */
-    @Autowired
-    private WETSettings defaultCdnSettings;
+	/** The default cdn settings. */
+	@Autowired
+	private WETSettings defaultCdnSettings;
 
-    /** The side menu config. */
-    @Autowired
-    private SideMenuConfig sideMenuConfig;
+	/** The side menu config. */
+	@Autowired
+	private SideMenuConfig sideMenuConfig;
 
-    /** The thymeleaf folder. */
-    @Value("${spring.thymeleaf.prefix}")
-    private String thymeleafFolder;
+	/** The thymeleaf folder. */
+	@Value("${spring.thymeleaf.prefix}")
+	private String thymeleafFolder;
 
-    /** The show exit transaction link. This can be turned off in your application.properties */
-    @Value("${show.wet.exit.transaction:true}")
-    private Boolean showExitTransaction;
+	/**
+	 * The show exit transaction link. This can be turned off in your
+	 * application.properties
+	 */
+	@Value("${show.wet.exit.transaction:true}")
+	private Boolean showExitTransaction;
 
-    /** The locale resolver. */
-    @Autowired
-    private LocaleResolver localeResolver;
+	/** The locale resolver. */
+	@Autowired
+	private LocaleResolver localeResolver;
 
-    /** Message source. */
-    @Autowired
-    private MessageSource applicationMessageSource;
+	/** Message source. */
+	@Autowired
+	private MessageSource applicationMessageSource;
 
-    /** The breadcrumbs service. */
-    @Autowired
-    private BreadcrumbService breadcrumbsService;
+	/** The breadcrumbs service. */
+	@Autowired
+	private BreadcrumbService breadcrumbsService;
 
-    /** The template resource. */
-    private final Map<String, WETResourceBundle> templateResource = new HashMap<>();
+	/** The template resource. */
+	private final Map<String, WETResourceBundle> templateResource = new HashMap<>();
 
-    /**
-     * The Constant THYMELEAF_PREFIX_SEARCH_STRING indicates the string to search for in the property defined by key
-     * spring.thymeleaf.prefix.
-     */
-    private static final String THYMELEAF_PREFIX_SEARCH_STRING = ":/";
+	/**
+	 * The Constant THYMELEAF_PREFIX_SEARCH_STRING indicates the string to
+	 * search for in the property defined by key spring.thymeleaf.prefix.
+	 */
+	private static final String THYMELEAF_PREFIX_SEARCH_STRING = ":/";
 
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-        throws Exception {
-        return true;
-    }
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		return true;
+	}
 
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-                           ModelAndView modelAndView) {
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) {
 
-        if (null != modelAndView && StringUtils.isNoneBlank(modelAndView.getViewName())) {
+		if (null != modelAndView && StringUtils.isNoneBlank(modelAndView.getViewName())) {
 
-            LOG.debug("---Post Method Execution---postHandle() " + request.getServletPath() + ", "
-                + modelAndView.getViewName());
+			LOG.debug("---Post Method Execution---postHandle() " + request.getServletPath() + ", "
+					+ modelAndView.getViewName());
 
-            WETSettings cdnSettings = new WETSettings();
+			WETSettings cdnSettings = new WETSettings();
 
-            // Check if page level properties exist and override with those.
-            if (!templateResource.containsKey(modelAndView.getViewName())) {
+			// Check if page level properties exist and override with those.
+			if (!templateResource.containsKey(modelAndView.getViewName())) {
 
-                templateResource.put(modelAndView.getViewName(), getBundle(modelAndView.getViewName()));
-            }
-            WETResourceBundle pageMessageSource = templateResource.get(modelAndView.getViewName());
+				templateResource.put(modelAndView.getViewName(), getBundle(modelAndView.getViewName()));
+			}
+			WETResourceBundle pageMessageSource = templateResource.get(modelAndView.getViewName());
 
-            // Set default
-            BeanUtils.copyProperties(defaultCdnSettings, cdnSettings);
+			// Set default
+			BeanUtils.copyProperties(defaultCdnSettings, cdnSettings);
 
-            // Set page
-            setPageTemplateProperties(cdnSettings, pageMessageSource);
+			// Set page
+			setPageTemplateProperties(cdnSettings, pageMessageSource);
 
-            // Set any session timeout properties
-            setSessionTimeoutProperties(cdnSettings, modelAndView);
+			// Set any session timeout properties
+			setSessionTimeoutProperties(cdnSettings, modelAndView);
 
-            // Set the Locale Toggle
-            setLanguageRequestUrl(modelAndView, request);
+			// Set the Locale Toggle
+			setLanguageRequestUrl(modelAndView, request);
 
-            // Set Side Menu
-            setSideMenu(modelAndView);
+			// Set Side Menu
+			setSideMenu(modelAndView);
 
-            // Breadcrumbs
-            setBreadCrumbs(modelAndView, request);
+			// Breadcrumbs
+			setBreadCrumbs(modelAndView, request);
 
-            // Leaving Secure Site
-            getLeavingSecureSiteWarning(cdnSettings, modelAndView);
+			// Leaving Secure Site
+			getLeavingSecureSiteWarning(cdnSettings, modelAndView);
 
-            // Set Exit Transaction
-            setExitTransaction(cdnSettings, modelAndView, request);
+			// Set Exit Transaction
+			setExitTransaction(cdnSettings, modelAndView, request);
 
-            // Set Footer Links
-            setFooterLinks(cdnSettings, modelAndView, request);
+			// Set Footer Links
+			setFooterLinks(cdnSettings, modelAndView, request);
 
-            // Put CDN object in model view.
-            modelAndView.addObject(WETModelKey.CDN.wetAttributeName(), cdnSettings);
-        }
-    }
+			if (cdnSettings.getShowFeedback() == true) {
+				cdnSettings.setShowFeedback(null);
 
-    /**
-     * Sets the footer links if the user wishes to override the WET4 defaults.
-     *
-     * @param cdnSettings the cdn settings
-     * @param modelAndView the model and view
-     * @param request the request
-     */
-    private void setFooterLinks(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
+			}
 
-        setContactInformation(cdnSettings, modelAndView, request);
+			// Put CDN object in model view.
+			modelAndView.addObject(WETModelKey.CDN.wetAttributeName(), cdnSettings);
+		}
+	}
 
-        if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
-            if (StringUtils.isNotBlank(cdnSettings.getPrivacyLinkEnglishUrl())) {
-                modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(),
-                    cdnSettings.getPrivacyLinkEnglishUrl());
-            }
-            if (StringUtils.isNotBlank(cdnSettings.getTermsLinkEnglishUrl())) {
-                modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(), cdnSettings.getTermsLinkEnglishUrl());
-            }
-        } else {
-            if (StringUtils.isNotBlank(cdnSettings.getPrivacyLinkFrenchUrl())) {
-                modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(),
-                    cdnSettings.getPrivacyLinkFrenchUrl());
-            }
-            if (StringUtils.isNotBlank(cdnSettings.getTermsLinkFrenchUrl())) {
-                modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(),
-                    cdnSettings.getTermsLinkFrenchUrl());
-            }
-        }
-    }
+	/**
+	 * Sets the footer links if the user wishes to override the WET4 defaults.
+	 *
+	 * @param cdnSettings
+	 *            the cdn settings
+	 * @param modelAndView
+	 *            the model and view
+	 * @param request
+	 *            the request
+	 */
+	private void setFooterLinks(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
 
-    /**
-     * Sets the contact information if the user wishes to override the WET4 defaults.
-     *
-     * @param cdnSettings the cdn settings
-     * @param modelAndView the model and view
-     * @param request the request
-     */
-    private void setContactInformation(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
-        List<ContactInformation> contactInformationList = new ArrayList<>();
-        ContactInformation contactInformation = new ContactInformation();
-        if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
-            contactInformation.setHref(cdnSettings.getContactLinkEnglishUrl());
-            contactInformation
-                .setText(applicationMessageSource.getMessage("cdn.contact.link.text", null, Locale.CANADA));
-        } else {
-            contactInformation.setHref(cdnSettings.getContactLinkFrenchUrl());
-            contactInformation
-                .setText(applicationMessageSource.getMessage("cdn.contact.link.text", null, Locale.CANADA_FRENCH));
-        }
-        contactInformationList.add(contactInformation);
-        if (StringUtils.isNotBlank(contactInformation.getHref())) {
-            modelAndView.addObject(WETModelKey.CONTACT_LINK.wetAttributeName(), contactInformationList);
-        }
-    }
+		setContactInformation(cdnSettings, modelAndView, request);
 
-    /**
-     * Sets the exit transaction.
-     *
-     * @param cdnSettings the cdn settings
-     * @param modelAndView the model and view
-     * @param request the request
-     */
-    private void setExitTransaction(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
+		if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
+			if (StringUtils.isNotBlank(cdnSettings.getPrivacyLinkEnglishUrl())) {
+				modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(),
+						cdnSettings.getPrivacyLinkEnglishUrl());
+			}
+			if (StringUtils.isNotBlank(cdnSettings.getTermsLinkEnglishUrl())) {
+				modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(), cdnSettings.getTermsLinkEnglishUrl());
+			}
 
-        // TODO It would be nice to do this only for pages using Transaction
-        // layouts.
-        if (!showExitTransaction) {
-            modelAndView.addObject(WETModelKey.EXIT_TRANSACTION.wetAttributeName(), "");
-            return;
-        }
-        List<ExitTransaction> exitTransactionList = new ArrayList<>();
-        ExitTransaction exitTransaction = new ExitTransaction();
-        exitTransaction.setHref(request.getContextPath() + cdnSettings.getExitTransactionLinkUrl());
-        exitTransaction.setTitle(applicationMessageSource.getMessage("cdn.exit.transaction.link.label", null,
-            LocaleContextHolder.getLocale()));
+		} else {
+			if (StringUtils.isNotBlank(cdnSettings.getPrivacyLinkFrenchUrl())) {
+				modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(),
+						cdnSettings.getPrivacyLinkFrenchUrl());
+			}
+			if (StringUtils.isNotBlank(cdnSettings.getTermsLinkFrenchUrl())) {
+				modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(),
+						cdnSettings.getTermsLinkFrenchUrl());
+			}
+		}
+	}
 
-        exitTransactionList.add(exitTransaction);
+	/**
+	 * Sets the contact information if the user wishes to override the WET4
+	 * defaults.
+	 *
+	 * @param cdnSettings
+	 *            the cdn settings
+	 * @param modelAndView
+	 *            the model and view
+	 * @param request
+	 *            the request
+	 */
+	private void setContactInformation(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
+		List<ContactInformation> contactInformationList = new ArrayList<>();
+		ContactInformation contactInformation = new ContactInformation();
+		if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
+			contactInformation.setHref(cdnSettings.getContactLinkEnglishUrl());
+			contactInformation
+					.setText(applicationMessageSource.getMessage("cdn.contact.link.text", null, Locale.CANADA));
+		} else {
+			contactInformation.setHref(cdnSettings.getContactLinkFrenchUrl());
+			contactInformation
+					.setText(applicationMessageSource.getMessage("cdn.contact.link.text", null, Locale.CANADA_FRENCH));
+		}
+		contactInformationList.add(contactInformation);
+		if (StringUtils.isNotBlank(contactInformation.getHref())) {
+			modelAndView.addObject(WETModelKey.CONTACT_LINK.wetAttributeName(), contactInformationList);
+		}
+	}
 
-        modelAndView.addObject(WETModelKey.EXIT_TRANSACTION.wetAttributeName(), exitTransactionList);
-    }
+	/**
+	 * Sets the exit transaction.
+	 *
+	 * @param cdnSettings
+	 *            the cdn settings
+	 * @param modelAndView
+	 *            the model and view
+	 * @param request
+	 *            the request
+	 */
+	private void setExitTransaction(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
 
-    /**
-     * Sets the bread crumbs for the requested view.
-     *
-     * @param modelAndView the model and view
-     * @param request the request
-     */
-    private void setBreadCrumbs(ModelAndView modelAndView, HttpServletRequest request) {
+		// TODO It would be nice to do this only for pages using Transaction
+		// layouts.
+		if (!showExitTransaction) {
+			modelAndView.addObject(WETModelKey.EXIT_TRANSACTION.wetAttributeName(), "");
+			return;
+		}
+		List<ExitTransaction> exitTransactionList = new ArrayList<>();
+		ExitTransaction exitTransaction = new ExitTransaction();
+		exitTransaction.setHref(request.getContextPath() + cdnSettings.getExitTransactionLinkUrl());
+		exitTransaction.setTitle(applicationMessageSource.getMessage("cdn.exit.transaction.link.label", null,
+				LocaleContextHolder.getLocale()));
 
-        StringBuilder viewParameters = new StringBuilder();
-        viewParameters.append(request.getRequestURI()).append(getRequestParameters(request).toString());
+		exitTransactionList.add(exitTransaction);
 
-        breadcrumbsService.buildBreadCrumbs(modelAndView.getViewName(), viewParameters.toString());
-        modelAndView.addObject(WETModelKey.BREADCRUMBS.wetAttributeName(), breadcrumbsService.getBreadCrumbList());
-    }
+		modelAndView.addObject(WETModelKey.EXIT_TRANSACTION.wetAttributeName(), exitTransactionList);
+	}
 
-    /**
-     * Sets the side menu.
-     *
-     * @param modelAndView the new side menu
-     */
-    private void setSideMenu(ModelAndView modelAndView) {
-        // Side Menu
-        if (modelAndView.getModelMap().containsAttribute(WETModelKey.PAGE_SECTION_MENU.wetAttributeName())) {
-            modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(),
-                modelAndView.getModelMap().get(WETModelKey.PAGE_SECTION_MENU.wetAttributeName()));
-        } else {
-            modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(),
-                getSectionMenuText(sideMenuConfig.getSectionMenuList()));
-        }
-    }
+	/**
+	 * Sets the bread crumbs for the requested view.
+	 *
+	 * @param modelAndView
+	 *            the model and view
+	 * @param request
+	 *            the request
+	 */
+	private void setBreadCrumbs(ModelAndView modelAndView, HttpServletRequest request) {
 
-    /**
-     * Gets the section menu text.
-     *
-     * @param sectionMenuList the section menu list
-     * @return the section menu text
-     */
-    private List<SectionMenu> getSectionMenuText(List<SectionMenu> sectionMenuList) {
+		// Get view breadCrumbs
+		StringBuilder viewParameters = new StringBuilder();
+		viewParameters.append(request.getRequestURI()).append(getRequestParameters(request).toString());
+		breadcrumbsService.buildBreadCrumbs(modelAndView.getViewName(), viewParameters.toString());
+		List<Object> viewBreadCrumbs = breadcrumbsService.getBreadCrumbList();
+		String breadCrumbsKey = WETModelKey.BREADCRUMBS.wetAttributeName();
 
-        for (SectionMenu sectionMenu : sectionMenuList) {
-            if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
-                sectionMenu.setSectionName(sectionMenu.getSectionNameEn());
-            } else {
-                sectionMenu.setSectionName(sectionMenu.getSectionNameFr());
-            }
-            for (MenuLink menuItem : sectionMenu.getMenuLinks()) {
-                if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
-                    menuItem.setText(menuItem.getTextEn());
-                } else {
-                    menuItem.setText(menuItem.getTextFr());
-                }
-            }
-        }
-        return sectionMenuList;
-    }
+		ModelMap modelMap = modelAndView.getModelMap();
+		Object breadCrumbList = modelMap.get(breadCrumbsKey);
+		// if list is provided by the BreadCrumbs key in the ModelMap then add
+		// to the BreadCrumbs list
+		if (breadCrumbList != null && breadCrumbList instanceof BreadCrumbs) {
+			BreadCrumbs breadCrumbs = (BreadCrumbs) breadCrumbList;
+			// list should not be null but check for null anyway
+			if (breadCrumbs.getList() != null && !breadCrumbs.getList().isEmpty()) {
+				viewBreadCrumbs.addAll(breadCrumbs.getList());
+			}
+		}
+		modelAndView.addObject(breadCrumbsKey, viewBreadCrumbs);
+	}
 
-    /**
-     * Sets the language request url.
-     *
-     * @param modelAndView the model and view
-     * @param request the request
-     */
-    private void setLanguageRequestUrl(ModelAndView modelAndView, HttpServletRequest request) {
+	/**
+	 * Sets the side menu.
+	 *
+	 * @param modelAndView
+	 *            the new side menu
+	 */
+	private void setSideMenu(ModelAndView modelAndView) {
+		// Side Menu
+		if (modelAndView.getModelMap().containsAttribute(WETModelKey.PAGE_SECTION_MENU.wetAttributeName())) {
+			modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(),
+					modelAndView.getModelMap().get(WETModelKey.PAGE_SECTION_MENU.wetAttributeName()));
+		} else {
+			modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(),
+					getSectionMenuText(sideMenuConfig.getSectionMenuList()));
+		}
+	}
 
-        StringBuilder requestParameters = getRequestParameters(request);
+	/**
+	 * Gets the section menu text.
+	 *
+	 * @param sectionMenuList
+	 *            the section menu list
+	 * @return the section menu text
+	 */
+	private List<SectionMenu> getSectionMenuText(List<SectionMenu> sectionMenuList) {
 
-        setLanguageToggle(request, requestParameters);
+		for (SectionMenu sectionMenu : sectionMenuList) {
+			if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
+				sectionMenu.setSectionName(sectionMenu.getSectionNameEn());
+			} else {
+				sectionMenu.setSectionName(sectionMenu.getSectionNameFr());
+			}
+			for (MenuLink menuItem : sectionMenu.getMenuLinks()) {
+				if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
+					menuItem.setText(menuItem.getTextEn());
+				} else {
+					menuItem.setText(menuItem.getTextFr());
+				}
+			}
+		}
+		return sectionMenuList;
+	}
 
-        modelAndView.addObject(WETModelKey.LANGUAGE_URL.wetAttributeName(), requestParameters.toString());
-    }
+	/**
+	 * Sets the language request url.
+	 *
+	 * @param modelAndView
+	 *            the model and view
+	 * @param request
+	 *            the request
+	 */
+	private void setLanguageRequestUrl(ModelAndView modelAndView, HttpServletRequest request) {
 
-    /**
-     * Gets the request parameters.
-     *
-     * @param request the request
-     * @return the request parameters
-     */
-    private StringBuilder getRequestParameters(HttpServletRequest request) {
-        StringBuilder requestParameters = new StringBuilder();
+		StringBuilder requestParameters = getRequestParameters(request);
 
-        Map<String, String[]> requestParams = request.getParameterMap();
-        Set<Entry<String, String[]>> entrySet = requestParams.entrySet();
+		setLanguageToggle(request, requestParameters);
 
-        int element = 0;
-        for (Entry<String, String[]> entry : entrySet) {
-            String key = entry.getKey(); // parameter name
-            String[] value = entry.getValue(); // parameter value
-            for (String val : value) {
-                if (!"lang".equals(key) && !WETModelKey.LANGUAGE_URL.wetAttributeName().equals(key)) {
-                    getParameterIdentifier(element == 0, requestParameters);
-                    requestParameters.append(key).append("=").append(val);
-                    element++;
-                }
-            }
-        }
-        return requestParameters;
-    }
+		modelAndView.addObject(WETModelKey.LANGUAGE_URL.wetAttributeName(), requestParameters.toString());
+	}
 
-    /**
-     * Gets the parameter identifier.
-     *
-     * @param firstParameter the first parameter
-     * @param requestParameters the request parameters
-     * @return the parameter identifier
-     */
-    private void getParameterIdentifier(boolean firstParameter, StringBuilder requestParameters) {
-        if (firstParameter) {
-            requestParameters.append("?");
-        } else {
-            requestParameters.append("&");
-        }
-    }
+	/**
+	 * Gets the request parameters.
+	 *
+	 * @param request
+	 *            the request
+	 * @return the request parameters
+	 */
+	private StringBuilder getRequestParameters(HttpServletRequest request) {
+		StringBuilder requestParameters = new StringBuilder();
 
-    /**
-     * Sets the language toggle.
-     *
-     * @param request the request
-     * @param langUrl the lang url
-     */
-    private void setLanguageToggle(HttpServletRequest request, StringBuilder langUrl) {
+		Map<String, String[]> requestParams = request.getParameterMap();
+		Set<Entry<String, String[]>> entrySet = requestParams.entrySet();
 
-        String requestedLanguage = null;
-        String requestLang = request.getParameter("lang");
-        Locale requestLocale = localeResolver.resolveLocale(request);
+		int element = 0;
+		for (Entry<String, String[]> entry : entrySet) {
+			String key = entry.getKey(); // parameter name
+			String[] value = entry.getValue(); // parameter value
+			for (String val : value) {
+				if (!"lang".equals(key) && !WETModelKey.LANGUAGE_URL.wetAttributeName().equals(key)) {
+					getParameterIdentifier(element == 0, requestParameters);
+					requestParameters.append(key).append("=").append(val);
+					element++;
+				}
+			}
+		}
+		return requestParameters;
+	}
 
-        String otherLocaleString = null;
-        if (null != requestLang) {
-            requestedLanguage = requestLang;
-        } else {
-            requestedLanguage = Language.getLanguage(requestLocale);
-        }
-        if (requestedLanguage.equals(Language.ENGLISH)) {
-            otherLocaleString = Language.FRENCH;
-        } else {
-            otherLocaleString = Language.ENGLISH;
-        }
-        if (!langUrl.toString().contains("?")) {
-            langUrl.append("?lang=").append(otherLocaleString);
-        } else {
-            langUrl.append("&lang=").append(otherLocaleString);
-        }
-    }
+	/**
+	 * Gets the parameter identifier.
+	 *
+	 * @param firstParameter
+	 *            the first parameter
+	 * @param requestParameters
+	 *            the request parameters
+	 * @return the parameter identifier
+	 */
+	private void getParameterIdentifier(boolean firstParameter, StringBuilder requestParameters) {
+		if (firstParameter) {
+			requestParameters.append("?");
+		} else {
+			requestParameters.append("&");
+		}
+	}
 
-    /**
-     * Sets the session timeout properties in the layout if provided.
-     *
-     * @param cdnSettings the cdn settings
-     * @param modelAndView the model and view
-     */
-    private void setSessionTimeoutProperties(WETSettings cdnSettings, ModelAndView modelAndView) {
-        if (cdnSettings.getSessionEnabled()) {
-            // Build data-wb-sessto
-            StringBuilder dataWbSessionTo = new StringBuilder();
-            dataWbSessionTo.append("<span class=\"wb-sessto\" data-wb-sessto='{");
-            dataWbSessionTo.append("\"inactivity\": ").append(cdnSettings.getSessionInactivity());
-            dataWbSessionTo.append(",").append("\"reactionTime\": ").append(cdnSettings.getSessionReactionTime());
-            dataWbSessionTo.append(",").append("\"sessionalive\":").append(cdnSettings.getSessionAlive());
-            if (StringUtils.isNotBlank(cdnSettings.getRefreshCallback())) {
-                dataWbSessionTo.append(",").append("\"refreshCallback\": ").append("\"")
-                    .append(cdnSettings.getRefreshCallback()).append("\"");
-            }
-            if (StringUtils.isNotBlank(cdnSettings.getRefreshCallbackUrl())) {
-                dataWbSessionTo.append(",").append("\"refreshCallbackUrl\": ").append("\"")
-                    .append(cdnSettings.getRefreshCallbackUrl()).append("\"");
-            }
-            if (null != cdnSettings.getRefreshOnClick()) {
-                dataWbSessionTo.append(",").append("\"refreshOnClick\": ").append(cdnSettings.getRefreshOnClick());
-            }
-            if (null != cdnSettings.getRefreshLimit()) {
-                dataWbSessionTo.append(",").append("\"refreshLimit\": ").append(cdnSettings.getRefreshLimit());
-            }
-            if (StringUtils.isNotBlank(cdnSettings.getRequestMethod())) {
-                dataWbSessionTo.append(",").append("\"method\":").append("\"").append(cdnSettings.getRequestMethod())
-                    .append("\"");
-            }
-            if (StringUtils.isNotBlank(cdnSettings.getAdditionalData())) {
-                dataWbSessionTo.append(",").append("\"additionalData\":").append("\"")
-                    .append(cdnSettings.getAdditionalData()).append("\"");
-            }
-            dataWbSessionTo.append(",").append("\"logouturl\":").append("\"").append(cdnSettings.getLogoutUrl())
-                .append("\"");
-            dataWbSessionTo.append("}'></span>");
-            modelAndView.addObject(WETModelKey.SESSION_TIMEOUT.wetAttributeName(), dataWbSessionTo.toString());
-        }
-    }
+	/**
+	 * Sets the language toggle.
+	 *
+	 * @param request
+	 *            the request
+	 * @param langUrl
+	 *            the lang url
+	 */
+	private void setLanguageToggle(HttpServletRequest request, StringBuilder langUrl) {
 
-    /**
-     * Gets the leaving secure site warning.
-     *
-     * @param cdnSettings the cdn settings
-     * @param modelAndView the model and view
-     * @return the leaving secure site warning
-     */
-    private void getLeavingSecureSiteWarning(WETSettings cdnSettings, ModelAndView modelAndView) {
+		String requestedLanguage = null;
+		String requestLang = request.getParameter("lang");
+		Locale requestLocale = localeResolver.resolveLocale(request);
 
-        ExitScript exitScript = new ExitScript();
-        exitScript.setExitScriptEnabled(cdnSettings.getLeavingSecureSiteWarningEnabled());
-        exitScript.setExitUrl(cdnSettings.getLeavingSecureSiteWarningRedirectUrl());
-        exitScript.setExitMessage((applicationMessageSource.getMessage("cdn.leavingsecuresitewarning.message", null,
-            LocaleContextHolder.getLocale())));
+		String otherLocaleString = null;
+		if (null != requestLang) {
+			requestedLanguage = requestLang;
+		} else {
+			requestedLanguage = Language.getLanguage(requestLocale);
+		}
+		if (requestedLanguage.equals(Language.ENGLISH)) {
+			otherLocaleString = Language.FRENCH;
+		} else {
+			otherLocaleString = Language.ENGLISH;
+		}
+		if (!langUrl.toString().contains("?")) {
+			langUrl.append("?lang=").append(otherLocaleString);
+		} else {
+			langUrl.append("&lang=").append(otherLocaleString);
+		}
+	}
 
-        exitScript.setExitExcludedDomains(cdnSettings.getLeavingSecureSiteWarningExcludedDomains());
+	/**
+	 * Sets the session timeout properties in the layout if provided.
+	 *
+	 * @param cdnSettings
+	 *            the cdn settings
+	 * @param modelAndView
+	 *            the model and view
+	 */
+	private void setSessionTimeoutProperties(WETSettings cdnSettings, ModelAndView modelAndView) {
+		if (cdnSettings.getSessionEnabled()) {
+			// Build data-wb-sessto
+			StringBuilder dataWbSessionTo = new StringBuilder();
+			dataWbSessionTo.append("<span class=\"wb-sessto\" data-wb-sessto='{");
+			dataWbSessionTo.append("\"inactivity\": ").append(cdnSettings.getSessionInactivity());
+			dataWbSessionTo.append(",").append("\"reactionTime\": ").append(cdnSettings.getSessionReactionTime());
+			dataWbSessionTo.append(",").append("\"sessionalive\":").append(cdnSettings.getSessionAlive());
+			if (StringUtils.isNotBlank(cdnSettings.getRefreshCallback())) {
+				dataWbSessionTo.append(",").append("\"refreshCallback\": ").append("\"")
+						.append(cdnSettings.getRefreshCallback()).append("\"");
+			}
+			if (StringUtils.isNotBlank(cdnSettings.getRefreshCallbackUrl())) {
+				dataWbSessionTo.append(",").append("\"refreshCallbackUrl\": ").append("\"")
+						.append(cdnSettings.getRefreshCallbackUrl()).append("\"");
+			}
+			if (null != cdnSettings.getRefreshOnClick()) {
+				dataWbSessionTo.append(",").append("\"refreshOnClick\": ").append(cdnSettings.getRefreshOnClick());
+			}
+			if (null != cdnSettings.getRefreshLimit()) {
+				dataWbSessionTo.append(",").append("\"refreshLimit\": ").append(cdnSettings.getRefreshLimit());
+			}
+			if (StringUtils.isNotBlank(cdnSettings.getRequestMethod())) {
+				dataWbSessionTo.append(",").append("\"method\":").append("\"").append(cdnSettings.getRequestMethod())
+						.append("\"");
+			}
+			if (StringUtils.isNotBlank(cdnSettings.getAdditionalData())) {
+				dataWbSessionTo.append(",").append("\"additionalData\":").append("\"")
+						.append(cdnSettings.getAdditionalData()).append("\"");
+			}
+			dataWbSessionTo.append(",").append("\"logouturl\":").append("\"").append(cdnSettings.getLogoutUrl())
+					.append("\"");
+			dataWbSessionTo.append("}'></span>");
+			modelAndView.addObject(WETModelKey.SESSION_TIMEOUT.wetAttributeName(), dataWbSessionTo.toString());
+		}
+	}
 
-        modelAndView.addObject(WETModelKey.LEAVING_SECURE_SITE.wetAttributeName(), exitScript);
-    }
+	/**
+	 * Gets the leaving secure site warning.
+	 *
+	 * @param cdnSettings
+	 *            the cdn settings
+	 * @param modelAndView
+	 *            the model and view
+	 * @return the leaving secure site warning
+	 */
+	private void getLeavingSecureSiteWarning(WETSettings cdnSettings, ModelAndView modelAndView) {
 
-    /**
-     * Sets the page template properties.
-     *
-     * @param cdnSettings the cdn settings
-     * @param messageSource the message source
-     */
-    private void setPageTemplateProperties(WETSettings cdnSettings, WETResourceBundle messageSource) {
+		ExitScript exitScript = new ExitScript();
+		exitScript.setExitScriptEnabled(cdnSettings.getLeavingSecureSiteWarningEnabled());
+		exitScript.setExitUrl(cdnSettings.getLeavingSecureSiteWarningRedirectUrl());
+		exitScript.setExitMessage((applicationMessageSource.getMessage("cdn.leavingsecuresitewarning.message", null,
+				LocaleContextHolder.getLocale())));
 
-        Set<String> keys = messageSource.getKeys(messageSource.getBasename(), Locale.CANADA);
-        if (CollectionUtils.isEmpty(keys)) {
-            return; // No page template overrides
-        }
+		exitScript.setExitExcludedDomains(cdnSettings.getLeavingSecureSiteWarningExcludedDomains());
 
-        if (keys.contains("cdn.url")) {
-            cdnSettings.setUrl(messageSource.getMessage("cdn.url", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.environment")) {
-            cdnSettings.setEnvironment(messageSource.getMessage("cdn.environment", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.goc.webtemplate.showpostcontent")) {
-            cdnSettings.setShowPostContent(
-                Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showpostcontent", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.goc.webtemplate.showfeatures")) {
-            cdnSettings.setShowFeatures(
-                Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showfeatures", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.goc.webtemplate.showfooter")) {
-            cdnSettings.setShowFooter(
-                Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showfooter", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.goc.webtemplate.showfeedbacklink")) {
-            cdnSettings.setShowFeedback(
-                Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showfeedbacklink", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.goc.webtemplate.showsharepagelink")) {
-            cdnSettings.setShowShare(Boolean
-                .valueOf(messageSource.getMessage("cdn.goc.webtemplate.showsharepagelink", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.session.timeout.enabled")) {
-            cdnSettings.setSessionEnabled(
-                Boolean.valueOf(messageSource.getMessage("cdn.session.timeout.enabled", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.session.inactivity.value")) {
-            cdnSettings.setSessionInactivity(
-                Integer.valueOf(messageSource.getMessage("cdn.session.inactivity.value", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.session.reactiontime.value")) {
-            cdnSettings.setSessionReactionTime(
-                Integer.valueOf(messageSource.getMessage("cdn.session.reactiontime.value", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.session.sessionalive.value")) {
-            cdnSettings.setSessionAlive(
-                Integer.valueOf(messageSource.getMessage("cdn.session.sessionalive.value", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.session.logouturl")) {
-            cdnSettings.setLogoutUrl(messageSource.getMessage("cdn.session.logouturl", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.session.refreshcallback")) {
-            cdnSettings
-                .setRefreshCallback(messageSource.getMessage("cdn.session.refreshcallback", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.session.refreshcallbackurl")) {
-            cdnSettings
-                .setRefreshCallbackUrl(messageSource.getMessage("cdn.session.refreshcallbackurl", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.session.refreshonclick")) {
-            cdnSettings.setRefreshOnClick(
-                Boolean.valueOf(messageSource.getMessage("cdn.session.refreshonclick", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.session.refreshlimit.value")) {
-            cdnSettings.setRefreshLimit(
-                Integer.valueOf(messageSource.getMessage("cdn.session.refreshlimit.value", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.session.method")) {
-            cdnSettings.setRequestMethod(messageSource.getMessage("cdn.session.method", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.session.additionaldata")) {
-            cdnSettings.setAdditionalData(messageSource.getMessage("cdn.session.additionaldata", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.goc.webtemplate.showsearch")) {
-            cdnSettings.setShowSearch(
-                Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showsearch", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.leavingsecuresitewarning.enabled")) {
-            cdnSettings.setLeavingSecureSiteWarningEnabled(
-                Boolean.valueOf(messageSource.getMessage("cdn.leavingsecuresitewarning.enabled", null, Locale.CANADA)));
-        }
-        if (keys.contains("cdn.leavingsecuresitewarning.redirecturl")) {
-            cdnSettings.setLeavingSecureSiteWarningRedirectUrl(
-                messageSource.getMessage("cdn.leavingsecuresitewarning.redirecturl", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.leavingsecuresitewarning.excludeddomains")) {
-            cdnSettings.setLeavingSecureSiteWarningExcludedDomains(
-                messageSource.getMessage("cdn.leavingsecuresitewarning.excludeddomains", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.contact.link.english.url")) {
-            cdnSettings.setContactLinkEnglishUrl(
-                messageSource.getMessage("cdn.contact.link.english.url", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.contact.link.french.url")) {
-            cdnSettings
-                .setContactLinkFrenchUrl(messageSource.getMessage("cdn.contact.link.french.url", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.terms.link.english.url")) {
-            cdnSettings
-                .setTermsLinkEnglishUrl(messageSource.getMessage("cdn.terms.link.english.url", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.terms.link.french.url")) {
-            cdnSettings
-                .setTermsLinkFrenchUrl(messageSource.getMessage("cdn.terms.link.french.url", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.privacy.link.english.url")) {
-            cdnSettings.setPrivacyLinkEnglishUrl(
-                messageSource.getMessage("cdn.privacy.link.english.url", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.privacy.link.french.url")) {
-            cdnSettings
-                .setPrivacyLinkFrenchUrl(messageSource.getMessage("cdn.privacy.link.french.url", null, Locale.CANADA));
-        }
-    }
+		modelAndView.addObject(WETModelKey.LEAVING_SECURE_SITE.wetAttributeName(), exitScript);
+	}
 
-    /**
-     * Gets the WET resource bundle.
-     *
-     * @param view the thymeleaf view name
-     * @return the bundle
-     */
-    private WETResourceBundle getBundle(String view) {
+	/**
+	 * Sets the page template properties.
+	 *
+	 * @param cdnSettings
+	 *            the cdn settings
+	 * @param messageSource
+	 *            the message source
+	 */
+	private void setPageTemplateProperties(WETSettings cdnSettings, WETResourceBundle messageSource) {
 
-        if (StringUtils.isBlank(thymeleafFolder)) {
-            throw new java.lang.IllegalArgumentException("Cannot find spring.thymeleaf.prefix application property.");
-        }
-        int thymleafFolderPosition = thymeleafFolder.indexOf(THYMELEAF_PREFIX_SEARCH_STRING);
-        if (thymleafFolderPosition == -1) {
-            throw new java.lang.IllegalArgumentException("Cannot find valid spring.thymeleaf.prefix key/value.");
-        }
+		Set<String> keys = messageSource.getKeys(messageSource.getBasename(), Locale.CANADA);
+		if (CollectionUtils.isEmpty(keys)) {
+			return; // No page template overrides
+		}
 
-        StringBuilder baseName = new StringBuilder();
-        WETResourceBundle pageMessageSource = new WETResourceBundle();
-        baseName.append(thymeleafFolder.substring(thymleafFolderPosition + THYMELEAF_PREFIX_SEARCH_STRING.length()))
-            .append(view);
-        pageMessageSource.setBasenames(baseName.toString());
+		if (keys.contains("cdn.url")) {
+			cdnSettings.setUrl(messageSource.getMessage("cdn.url", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.environment")) {
+			cdnSettings.setEnvironment(messageSource.getMessage("cdn.environment", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.goc.webtemplate.showpostcontent")) {
+			cdnSettings.setShowPostContent(Boolean
+					.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showpostcontent", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.goc.webtemplate.showfeatures")) {
+			cdnSettings.setShowFeatures(
+					Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showfeatures", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.goc.webtemplate.showfooter")) {
+			cdnSettings.setShowFooter(
+					Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showfooter", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.goc.webtemplate.showfeedbacklink")) {
+			cdnSettings.setShowFeedback(Boolean
+					.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showfeedbacklink", null, Locale.CANADA)));
+		}
 
-        return pageMessageSource;
-    }
+		if (keys.contains("cdn.goc.webtemplate.showsharepagelink")) {
+			cdnSettings.setShowShare(Boolean
+					.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showsharepagelink", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.session.timeout.enabled")) {
+			cdnSettings.setSessionEnabled(
+					Boolean.valueOf(messageSource.getMessage("cdn.session.timeout.enabled", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.session.inactivity.value")) {
+			cdnSettings.setSessionInactivity(
+					Integer.valueOf(messageSource.getMessage("cdn.session.inactivity.value", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.session.reactiontime.value")) {
+			cdnSettings.setSessionReactionTime(
+					Integer.valueOf(messageSource.getMessage("cdn.session.reactiontime.value", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.session.sessionalive.value")) {
+			cdnSettings.setSessionAlive(
+					Integer.valueOf(messageSource.getMessage("cdn.session.sessionalive.value", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.session.logouturl")) {
+			cdnSettings.setLogoutUrl(messageSource.getMessage("cdn.session.logouturl", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.session.refreshcallback")) {
+			cdnSettings
+					.setRefreshCallback(messageSource.getMessage("cdn.session.refreshcallback", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.session.refreshcallbackurl")) {
+			cdnSettings.setRefreshCallbackUrl(
+					messageSource.getMessage("cdn.session.refreshcallbackurl", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.session.refreshonclick")) {
+			cdnSettings.setRefreshOnClick(
+					Boolean.valueOf(messageSource.getMessage("cdn.session.refreshonclick", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.session.refreshlimit.value")) {
+			cdnSettings.setRefreshLimit(
+					Integer.valueOf(messageSource.getMessage("cdn.session.refreshlimit.value", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.session.method")) {
+			cdnSettings.setRequestMethod(messageSource.getMessage("cdn.session.method", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.session.additionaldata")) {
+			cdnSettings.setAdditionalData(messageSource.getMessage("cdn.session.additionaldata", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.goc.webtemplate.showsearch")) {
+			cdnSettings.setShowSearch(
+					Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showsearch", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.leavingsecuresitewarning.enabled")) {
+			cdnSettings.setLeavingSecureSiteWarningEnabled(Boolean
+					.valueOf(messageSource.getMessage("cdn.leavingsecuresitewarning.enabled", null, Locale.CANADA)));
+		}
+		if (keys.contains("cdn.leavingsecuresitewarning.redirecturl")) {
+			cdnSettings.setLeavingSecureSiteWarningRedirectUrl(
+					messageSource.getMessage("cdn.leavingsecuresitewarning.redirecturl", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.leavingsecuresitewarning.excludeddomains")) {
+			cdnSettings.setLeavingSecureSiteWarningExcludedDomains(
+					messageSource.getMessage("cdn.leavingsecuresitewarning.excludeddomains", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.contact.link.english.url")) {
+			cdnSettings.setContactLinkEnglishUrl(
+					messageSource.getMessage("cdn.contact.link.english.url", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.contact.link.french.url")) {
+			cdnSettings.setContactLinkFrenchUrl(
+					messageSource.getMessage("cdn.contact.link.french.url", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.terms.link.english.url")) {
+			cdnSettings.setTermsLinkEnglishUrl(
+					messageSource.getMessage("cdn.terms.link.english.url", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.terms.link.french.url")) {
+			cdnSettings
+					.setTermsLinkFrenchUrl(messageSource.getMessage("cdn.terms.link.french.url", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.privacy.link.english.url")) {
+			cdnSettings.setPrivacyLinkEnglishUrl(
+					messageSource.getMessage("cdn.privacy.link.english.url", null, Locale.CANADA));
+		}
+		if (keys.contains("cdn.privacy.link.french.url")) {
+			cdnSettings.setPrivacyLinkFrenchUrl(
+					messageSource.getMessage("cdn.privacy.link.french.url", null, Locale.CANADA));
+		}
+	}
+
+	/**
+	 * Gets the WET resource bundle.
+	 *
+	 * @param view
+	 *            the thymeleaf view name
+	 * @return the bundle
+	 */
+	private WETResourceBundle getBundle(String view) {
+
+		if (StringUtils.isBlank(thymeleafFolder)) {
+			throw new java.lang.IllegalArgumentException("Cannot find spring.thymeleaf.prefix application property.");
+		}
+		int thymleafFolderPosition = thymeleafFolder.indexOf(THYMELEAF_PREFIX_SEARCH_STRING);
+		if (thymleafFolderPosition == -1) {
+			throw new java.lang.IllegalArgumentException("Cannot find valid spring.thymeleaf.prefix key/value.");
+		}
+
+		StringBuilder baseName = new StringBuilder();
+		WETResourceBundle pageMessageSource = new WETResourceBundle();
+		baseName.append(thymeleafFolder.substring(thymleafFolderPosition + THYMELEAF_PREFIX_SEARCH_STRING.length()))
+				.append(view);
+		pageMessageSource.setBasenames(baseName.toString());
+
+		return pageMessageSource;
+	}
 
 }
