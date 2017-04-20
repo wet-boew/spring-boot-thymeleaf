@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 /**
  * WETSettings.
@@ -33,8 +34,9 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @EnableConfigurationProperties
-@PropertySource("classpath:cdn/cdn.properties")
-@PropertySource("classpath:cdn/cdn_override.properties")
+
+@PropertySources({ @PropertySource("classpath:cdn/cdn.properties"),
+		@PropertySource("classpath:cdn/cdn_override.properties") })
 public class WETSettings {
 
 	/** Url of the cdn. */
