@@ -114,5 +114,8 @@
     <!--/*/ <th:block th:each="jsInclude : ${jsIncludes}"> /*/-->
     <script type="text/javascript" data-th-src="@{__${jsInclude}__}"></script>
     <!--/*/ </th:block> /*/-->
+    
+    <script type="text/javascript" data-th-src="@{/js/breadcrumbs.js}" ></script>
+    
   </body>
 </html>
