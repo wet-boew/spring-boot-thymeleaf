@@ -3,8 +3,13 @@
  */
 package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 
+import java.util.Locale;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import ca.canada.ised.wet.cdts.WetCdtsSpringBootThymeleafConfig;
 
@@ -18,4 +23,10 @@ import ca.canada.ised.wet.cdts.WetCdtsSpringBootThymeleafConfig;
 @EnableAutoConfiguration
 public class WetCdtsSpringBootThymeleafTestConfig extends WetCdtsSpringBootThymeleafConfig {
 
+    @Bean
+    public LocaleResolver localeResolver() {
+        SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+        localeResolver.setDefaultLocale(Locale.CANADA);
+        return localeResolver;
+    }
 }
