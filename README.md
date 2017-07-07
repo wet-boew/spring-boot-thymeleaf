@@ -10,16 +10,16 @@ This is a Spring Boot Starter that uses Thymeleaf to implement CDTS.
 ## How to use wet-cdts-spring-boot-thymeleaf-starter
 
 1) Add the starter to your projects POM file.
-
+```
     <dependency>
       <groupId>ca.canada.ised.wet.cdts</groupId>
       <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
       <version>4.0.21.4</version>
     </dependency>
+```
 
 2) Add the WETTemplateInterceptor to your applications list of interceptors.
-
-
+```
     /**
      * Web configuration.
      */
@@ -37,9 +37,10 @@ This is a Spring Boot Starter that uses Thymeleaf to implement CDTS.
             registry.addInterceptor(cdnTemplateInterceptor);
         }
     }
+```
 
 3) Use one of the supplied templates as the basis for your Thymeleaf templates.
-
+```
     <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/layout">
       <head>
         <title>Page Title</title>
@@ -61,3 +62,4 @@ This is a Spring Boot Starter that uses Thymeleaf to implement CDTS.
         </div>      
       </body>
     </html>
+```
