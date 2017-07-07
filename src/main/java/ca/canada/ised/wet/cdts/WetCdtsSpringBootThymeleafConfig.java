@@ -3,15 +3,11 @@
  */
 package ca.canada.ised.wet.cdts;
 
-import java.util.Locale;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import ca.canada.ised.wet.cdts.components.wet.interceptor.WETTemplateInterceptor;
 
@@ -24,18 +20,6 @@ import ca.canada.ised.wet.cdts.components.wet.interceptor.WETTemplateInterceptor
 @Configuration
 @ComponentScan(basePackages = "ca.canada.ised.wet.cdts.components")
 public class WetCdtsSpringBootThymeleafConfig {
-
-    /**
-     * Locale resolver.
-     *
-     * @return <code>LocaleResolver</code>
-     */
-    @Bean(name = "localeResolver")
-    public LocaleResolver localeResolver() {
-        SessionLocaleResolver localeResolver = new SessionLocaleResolver();
-        localeResolver.setDefaultLocale(Locale.CANADA);
-        return localeResolver;
-    }
 
     /**
      * Locale change interceptor.
