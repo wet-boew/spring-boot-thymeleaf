@@ -1,0 +1,128 @@
+		<ul id="wb-tphp">
+			<li class="wb-slc"><a class="wb-sl" href="#wb-cont">Passer au contenu principal</a></li>
+			<li class="wb-slc visible-sm visible-md visible-lg"><a class="wb-sl" href="#wb-info">Passer à «&#160;À propos de ce site&#160;»</a></li>
+			<!-- Si vous avez un menu de section 
+			<li class="wb-slc visible-md visible-lg"><a class="wb-sl" href="#wb-sec">Passer au menu de la section</a></li>
+			-->
+		</ul>
+		<header role="banner" class="gc-app">
+			<div id="wb-bnr" class="container">
+				<div class="row">
+					<div class="brand col-xs-8 col-sm-9 col-md-6">
+						<!-- Si vous êtes sur une page sécurisée, retirez le <a> -->
+						<a href="https://www.canada.ca/fr.html"><object type="image/svg+xml" tabindex="-1" data="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/assets/sig-blk-fr.svg"></object><span class="wb-inv"> Gouvernement du Canada / <span lang="en">Government of Canada</span></span></a>
+					</div>
+					<div class="visible-xxs">
+						<div class="col-xs-8 gc-app-name">
+							<!-- Si vous êtes sur une page sécurisée, ajoutez le <i> -->
+							<!-- Entrez le nom de votre application ci-bas -->
+							<p class="h1"><!--<i class="glyphicon glyphicon-lock mrgn-rght-md"></i>-->[Nom de l'application]</p>
+						</div>
+						<div class="col-xs-4 text-right visible-xxs">
+							<!-- Si vous utilisez le bouton de connexion/déconnexion 
+							<a href="#" class="btn btn-primary btn-signoff">Déconnexion</a>
+							<a href="#" class="btn btn-primary btn-signoff">Connexion</a>
+							-->
+						</div>
+					</div>
+					<section class="wb-mb-links col-xs-4 col-sm-3 visible-sm visible-xs" id="wb-glb-mn">
+						<!-- Ajustez le <h2>, title et <span> ci-bas selon si vous utilisez un champ de recherche et/ou un menu -->
+						<h2>Recherche et menus</h2>
+						<ul class="list-inline text-right chvrn">
+							<li><a href="#mb-pnl" title="Recherche et menus" aria-controls="mb-pnl" class="overlay-lnk" role="button"><!-- Retirez le <span> qui suit si vous n'utilisez pas de champ de recherche --><span class="glyphicon glyphicon-search"><span class="glyphicon glyphicon-th-list"><span class="wb-inv">Recherche et menus</span></span><!-- Retirez le </span> qui suit si vous n'utilisez pas de champ de recherche --></span></a></li>
+						</ul>
+						<div id="mb-pnl"></div>
+					</section>
+				</div>
+				<div class="clearfix"></div>
+				<div class="row gc-app-br">
+					<div class="hidden-xxs">
+						<div class="col-xs-8">
+							<!-- Si vous êtes sur une page sécurisée, ajoutez le <i> -->
+							<!-- Entrez le nom de votre application ci-bas -->
+							<p class="h1"><!--<i class="glyphicon glyphicon-lock mrgn-rght-md"></i>-->[Nom de l'application]</p>
+						</div>
+						<!-- Si vous utilisez le bouton de connexion/déconnexion 
+						<div class="col-xs-4 text-right visible-sm visible-xs">
+							<a href="#" class="btn btn-primary btn-signoff"><i class="glyphicon glyphicon-off"></i>Déconnexion</a>
+							<a href="#" class="btn btn-primary btn-signoff"><i class="glyphicon glyphicon-off"></i>Connexion</a>
+						</div>
+						-->
+					</div>
+					<div class="col-md-4 pull-right text-right">
+						<!-- Retirez toute la <section> si vous voulez retirer le champ de recherche -->
+						<section id="wb-srch" class="text-right visible-md visible-lg">
+							<h2>Recherche</h2>
+							<form action="https://www.canada.ca/fr/sr.html#wb-land" method="get" name="cse-search-box" role="search" class="form-inline">
+								<div class="form-group">
+									<label for="wb-srch-q" class="wb-inv">Recherchez le site Web</label>
+									<input name="cdn" value="canada" type="hidden">
+									<input name="st" value="s" type="hidden">
+									<input name="num" value="10" type="hidden">
+									<input name="langs" value="fr" type="hidden">
+									<input name="st1rt" value="1" type="hidden">
+									<input name="s5bm3ts21rch" value="x" type="hidden">
+									<input id="wb-srch-q" list="wb-srch-q-ac" class="wb-srch-q form-control" name="q" type="search" value="" size="27" maxlength="150" placeholder="Rechercher dans Canada.ca">
+									<input type="hidden" name="_charset_" value="UTF-8">
+									<datalist id="wb-srch-q-ac">
+										<!--[if lte IE 9]><select><![endif]-->
+										<!--[if lte IE 9]></select><![endif]-->
+									</datalist>
+								</div>
+								<div class="form-group submit">
+									<button type="submit" id="wb-srch-sub" class="btn btn-primary btn-small" name="wb-srch-sub"><span class="glyphicon-search glyphicon"></span><span class="wb-inv">Recherche</span></button>
+								</div>
+							</form>
+						</section>
+					</div>
+				</div>
+			</div>
+			<!-- Ajoutez la classe "wb-menu" ainsi que data-trgt="mb-pnl" si vous retirez le menu -->
+			<div id="wb-sm" class="visible-md visible-lg">
+				<div class="container">
+					<!-- Retirez le <nav> au complet si vous ne voulez pas de menu -->
+					<!-- Changez la classe à "col-md-10" si vous avez un bouton de connexion/déconnexion -->
+					<nav role="navigation" data-trgt="mb-pnl" class="wb-menu col-md-12" typeof="SiteNavigationElement">
+						<div class="nvbar">
+							<h2 class="wb-inv">Menu des sujets</h2>
+							<div class="row">
+								<ul class="list-inline menu">
+									<li><a href="http://www.edsc.gc.ca/fr/emplois/index.page">Emplois</a></li>
+									<li><a href="http://www.cic.gc.ca/francais/index.asp">Immigration</a></li>
+									<li><a href="https://voyage.gc.ca/">Voyage</a></li>
+									<li><a href="https://www.canada.ca/fr/services/entreprises.html">Entreprises</a></li>
+									<li><a href="https://www.canada.ca/fr/services/prestations.html">Prestations</a></li>
+									<li><a href="https://www.canada.ca/fr/services/sante.html">Santé</a></li>
+									<li><a href="https://www.canada.ca/fr/services/impots.html">Impôts</a></li>
+									<li><a href="https://www.canada.ca/fr/services.html">Autres services</a></li>
+								</ul>
+							</div>
+						</div>
+					</nav>
+					<!-- Changez la classe à "col-md-10" si vous avez un bouton de connexion/déconnexion -->
+					<!-- Si vous désactivez le menu 
+					<div class="wb-menu col-md-12"></div>
+					-->
+					<!-- Si vous utilisez le bouton de connexion/déconnexion 
+					<div class="text-right col-md-2 visible-md visible-lg">
+						<div class="row">
+							<p><a href="#" class="btn btn-default btn-lg btn-signoff"><i class="glyphicon glyphicon-off"></i>Connexion</a></p>
+							<p><a href="#" class="btn btn-default btn-lg btn-signoff"><i class="glyphicon glyphicon-off"></i>Déconnexion</a></p>
+						</div>
+					</div>
+					-->
+				</div>
+			</div>
+			<!-- Retirez tout le <nav> si vous voulez désactiver le fil d'Ariane -->
+			<nav role="navigation" id="wb-bc" property="breadcrumb">
+				<h2>You are here:</h2>
+				<div class="container">
+					<div class="row">
+						<ol class="breadcrumb">
+							<!-- Insérer votre fil d'Ariane ici -->
+							<li><a href="https://www.canada.ca/fr.html">Accueil</a></li>
+						</ol>
+					</div>
+				</div>
+			</nav>
+		</header>
