@@ -16,9 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.LocaleResolver;
@@ -44,6 +46,7 @@ import ca.canada.ised.wet.cdts.components.wet.utils.Language;
  *
  * @author Frank Giusto
  */
+@Component
 public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
 
 	/** Logging instance. */
@@ -74,6 +77,7 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
 
 	/** Message source. */
 	@Autowired
+	@Qualifier("messageSource")
 	private MessageSource applicationMessageSource;
 
 	/** The breadcrumbs service. */
