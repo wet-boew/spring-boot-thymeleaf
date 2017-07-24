@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!--[if lt IE 9]><html class="no-js lt-ie9" data-th-lang="#{lang}" lang="en" dir="ltr"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lt-ie9" dir="ltr"><![endif]-->
 <!--[if gt IE 8]><!-->
-<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" data-th-lang="__#{lang}__" dir="ltr">
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" data-th-lang="#{lang}" dir="ltr">
 <!--<![endif]-->
   <head>
     <meta charset="utf-8" />
@@ -10,16 +10,17 @@
     <title>Temporary title</title>
     <meta content="width=device-width,initial-scale=1" name="viewport" />
     <!-- Load closure template scripts -->
-    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/soyutils.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplateTheme} + '/' + ${cdn.wettemplateVersion} + '/cdts/compiled/soyutils.js'"></script>
-    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplateTheme} + '/' + ${cdn.wettemplateVersion} + '/cdts/compiled/wet-' + #{lang} + '.js'"></script>
+    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/soyutils.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/cdts/compiled/soyutils.js'"></script>
+    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/cdts/compiled/wet-' + #{lang} + '.js'"></script>
     <noscript>
       <!-- Write closure fall-back static file -->
-      <div data-th-replace="${cdn.wettemplateTheme} + '/' + ${cdn.wettemplateVersion} + '/refTop'"></div>
+      <div data-th-replace="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/refTop'"></div>
     </noscript>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
       document.write(wet.builder.refTop({
-        cdnEnv: /*[[${cdn.environment}]]*/ "prod"
+        cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+        jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false
       }));
     </script>
     <!-- Write custom CSS elements here. Added through 'cssIncludes' model attribute. -->
@@ -32,27 +33,26 @@
     <!--/*/ </th:block> /*/-->      
   </head>
   <body vocab="http://schema.org/" typeof="WebPage">
-    <!-- Insert session timeout js here. -->
-    <div data-th-if="${cdn.sessionEnabled}" data-th-utext="${wetSessionTimeout}"></div>
+    <!-- Insert session timeout here. -->
+    <!--/*/ <th:block  data-th-if="${cdn.session.timeout.enabled}" data-th-utext="${wetSessionTimeout}"></th:block> /*/-->
     <div id="def-top">
       <!-- Write closure fall-back static file -->
-      <div data-th-include="${cdn.wettemplateTheme} + '/' + ${cdn.wettemplateVersion} + '/top-' + #{lang}"></div>
+      <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/top-' + #{lang}"></div>
     </div>    
     <!-- Write closure template -->
     <script data-th-inline="javascript">
     	/*<![CDATA[*/
         var defTop = document.getElementById("def-top");
         defTop.outerHTML = wet.builder.top({
-          cdnEnv: /*[[${cdn.environment}]]*/ "prod",
-          search: /*[[${cdn.showSearch}]]*/ true,
+          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+          search: /*[[${cdn.goc.webtemplate.showsearch}]]*/ true,
           lngLinks: [{
               lang: /*[[#{lang.other}]]*/ "fre",
               href: /*[[${langUrl}]]*/ "/",
               text: /*[[#{language.other}]]*/ "Français"
           }],
-          showPreContent: /*[[${cdn.showPreContent}]]*/ true,
+          showPreContent: /*[[${cdn.goc.webtemplate.showprecontent}]]*/ true,
           breadcrumbs: /*[[${breadcrumbs}]]*/ [{'acronym':'CDN','href':'http://www.canada.ca/en/index.html','title':'Home'}]
-            // Jumbotron items?
         });
         /*]]>*/
     </script>
@@ -62,47 +62,47 @@
       <!-- end main content -->
       <div id="def-preFooter">
         <!-- Write closure fall-back static file -->
-        <div data-th-include="${cdn.wettemplateTheme} + '/' + ${cdn.wettemplateVersion} + '/preFooter-' + #{lang}"></div>
+        <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/preFooter-' + #{lang}"></div>
       </div>
       <!-- Write closure template -->
       <script data-th-inline="javascript">
           var defPreFooter = document.getElementById("def-preFooter");
           defPreFooter.outerHTML = wet.builder.preFooter({
-              cdnEnv: /*[[${cdn.environment}]]*/ "prod",
+              cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
               dateModified: /*[[#{project.build.date}]]*/ "",
-              showPostContent: /*[[${cdn.showPostContent}]]*/ true, 
-              showFeedback: /*[[${cdn.showFeedback}]]*/ true,
-			  showShare: /*[[${cdn.showShare}]]*/ false
-
-			  
+              showPostContent: /*[[${cdn.goc.webtemplate.showpostcontent}]]*/ true, 
+              showFeedback: /*[[${cdn.goc.webtemplate.showfeedbacklink}]]*/ true,
+			  showShare: /*[[${cdn.goc.webtemplate.showsharepagelink}]]*/ false,
+			  screenIdentifier: "",
+			  versionIdentifier: ""
           });
       </script>
     </main>    
     <div id="def-footer">
       <!-- Write closure fall-back static file -->
-      <div data-th-include="${cdn.wettemplateTheme} + '/' + ${cdn.wettemplateVersion} + '/footer-' + #{lang}"></div>
+      <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/footer-' + #{lang}"></div>
     </div>        
     <!-- Write closure template -->
     <script data-th-inline="javascript">
         var defFooter = document.getElementById("def-footer");
         defFooter.outerHTML = wet.builder.footer({
-            cdnEnv: /*[[${cdn.environment}]]*/ "prod",
-		    showFooter: /*[[${cdn.showFooter}]]*/ true,
-		    showFeatures: /*[[${cdn.showFeatures}]]*/ false,
-		    contactLinks: /*[[${contactLink}]]*/ [{text:"Contact information",href:"/"}],
-	        termsLink: /*[[${termsLink}]]*/ "/",
-	        privacyLink: /*[[${privacyLink}]]*/ "/" 
+            cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+		    showFooter:true,
+		    showFeatures: /*[[${cdn.goc.webtemplate.showfeatures}]]*/ false,
+		    contactLinks: /*[[${contactLink}]]*/ [{text:"Contact information",href:"/"}]
+	        //termsLink: /*[[${termsLink}]]*/ "/",
+	        //privacyLink: /*[[${privacyLink}]]*/ "/" 
         });
     </script>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
         document.write(wet.builder.refFooter({
-            cdnEnv: /*[[${cdn.environment}]]*/ "prod",
-            exitScript: /*[[${leavingSecureSite.exitScriptEnabled}]]*/ "",
-            exitURL: /*[[${leavingSecureSite.exitUrl}]]*/ "/",
-            exitMsg: /*[[${leavingSecureSite.exitMessage}]]*/ "",
-            exitDomains: /*[[${leavingSecureSite.exitExcludedDomains}]]*/ {}
-            // Render leaving secure site warning.
+            cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+            jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false,
+            exitScript: /*[[${cdn.leavingsecuresitewarning.enabled}]]*/ "",
+            exitURL: /*[[${cdn.leavingsecuresitewarning.redirecturl}]]*/ "/",
+            exitMsg: "",
+            exitDomains: /*[[${cdn.leavingsecuresitewarning.excludeddomains}]]*/ {}
         }));
     </script>         
     <!-- Additional JavaScript includes.  Added through jsLibraryIncludes model attribute. -->

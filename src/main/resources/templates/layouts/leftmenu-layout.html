@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<!--[if lt IE 9]><html class="no-js lt-ie9" data-th-lang="#{lang}" lang="en" dir="ltr"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lt-ie9" dir="ltr"><![endif]-->
 <!--[if gt IE 8]><!-->
 <html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" data-th-lang="__#{lang}__" dir="ltr">
-
 <!--<![endif]-->
   <head>
     <meta charset="utf-8" />
@@ -19,7 +18,7 @@
     <!-- Write closure template -->
     <script data-th-inline="javascript">
       document.write(wet.builder.refTop({
-        cdnEnv: /*[[${cdn.environment}]]*/ "prod"
+        cdnEnv: /*[[${cdn.environment}]]*/ "Akamai"
       }));
     </script>
     <!-- Write external CSS elements here. Added through 'externalCssIncludes' model attribute. -->
@@ -35,8 +34,8 @@
     <!-- link rel="stylesheet" type="text/css"  href="css/breadcrumb.css" / -->
   </head>
   <body vocab="http://schema.org/" typeof="WebPage">	
-    <!-- Write session timeout JS here. -->
-    <div data-th-if="${cdn.sessionEnabled}" data-th-utext="${wetSessionTimeout}"></div>
+    <!-- Insert session timeout here. -->
+    <!--/*/ <th:block  data-th-if="${cdn.session.timeout.enabled}" data-th-utext="${wetSessionTimeout}"></th:block> /*/-->
     <div id="def-top">
       <!-- Write closure fall-back static file -->
       <div data-th-include="${cdn.wettemplateTheme} + '/' + ${cdn.wettemplateVersion} + '/top-' + #{lang}"></div>
