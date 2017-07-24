@@ -34,7 +34,7 @@ public class WetCdtsSpringBootThymeleafTestConfig extends WetCdtsSpringBootThyme
 	@Bean(name = "messageSource")
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-		messageSource.setParentMessageSource(wetMessageSource());
+		messageSource.setBasenames("cdn/cdn", "cdn/cdn_override", "cdn/common_messages");
 		return messageSource;
 	}
 
