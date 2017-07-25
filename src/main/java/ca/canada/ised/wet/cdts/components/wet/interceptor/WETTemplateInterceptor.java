@@ -1,7 +1,6 @@
 package ca.canada.ised.wet.cdts.components.wet.interceptor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +20,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -30,7 +27,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.BreadCrumbs;
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.BreadcrumbService;
 import ca.canada.ised.wet.cdts.components.wet.config.WETModelKey;
-import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
 import ca.canada.ised.wet.cdts.components.wet.config.WETSettings;
 import ca.canada.ised.wet.cdts.components.wet.exit.ExitScript;
 import ca.canada.ised.wet.cdts.components.wet.exit.ExitTransaction;
@@ -83,15 +79,6 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private BreadcrumbService breadcrumbsService;
 
-    /** The template resource. */
-    private final Map<String, WETResourceBundle> templateResource = new HashMap<>();
-
-    /**
-     * The Constant THYMELEAF_PREFIX_SEARCH_STRING indicates the string to search for in the property defined by key
-     * spring.thymeleaf.prefix.
-     */
-    private static final String THYMELEAF_PREFIX_SEARCH_STRING = ":/";
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
         throws Exception {
@@ -102,28 +89,13 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
                            ModelAndView modelAndView) {
 
-        if (null != modelAndView && StringUtils.isNoneBlank(modelAndView.getViewName())) {
+        if (null != modelAndView && StringUtils.isNotBlank(modelAndView.getViewName())) {
 
             LOG.debug("---Post Method Execution---postHandle() " + request.getServletPath() + ", "
                 + modelAndView.getViewName());
 
-            WETSettings cdnSettings = new WETSettings();
-
-            // Check if page level properties exist and override with those.
-            if (!templateResource.containsKey(modelAndView.getViewName())) {
-
-                templateResource.put(modelAndView.getViewName(), getBundle(modelAndView.getViewName()));
-            }
-            WETResourceBundle pageMessageSource = templateResource.get(modelAndView.getViewName());
-
-            // Set default
-            BeanUtils.copyProperties(defaultCdnSettings, cdnSettings);
-
-            // Set page
-            setPageTemplateProperties(cdnSettings, pageMessageSource);
-
             // Set any session timeout properties
-            setSessionTimeoutProperties(cdnSettings, modelAndView);
+            setSessionTimeoutProperties(defaultCdnSettings, modelAndView);
 
             // Set the Locale Toggle
             setLanguageRequestUrl(modelAndView, request);
@@ -135,20 +107,16 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
             setBreadCrumbs(modelAndView, request);
 
             // Leaving Secure Site
-            getLeavingSecureSiteWarning(cdnSettings, modelAndView);
+            getLeavingSecureSiteWarning(defaultCdnSettings, modelAndView);
 
             // Set Exit Transaction
-            setExitTransaction(cdnSettings, modelAndView, request);
+            setExitTransaction(defaultCdnSettings, modelAndView, request);
 
             // Set Footer Links
-            setFooterLinks(cdnSettings, modelAndView, request);
-
-            if (cdnSettings.getGoc().getWebtemplate().getShowfeedbacklink()) {
-                cdnSettings.getGoc().getWebtemplate().setShowfeedbacklink(null);
-            }
+            setFooterLinks(defaultCdnSettings, modelAndView, request);
 
             // Put CDN object in model view.
-            modelAndView.addObject(WETModelKey.CDN.wetAttributeName(), cdnSettings);
+            modelAndView.addObject(WETModelKey.CDN.wetAttributeName(), defaultCdnSettings);
         }
     }
 
@@ -163,25 +131,26 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
 
         setContactInformation(cdnSettings, modelAndView, request);
 
-        // if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
-        // if (StringUtils.isNotBlank(cdnSettings.getPrivacyLinkEnglishUrl())) {
-        // modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(),
-        // cdnSettings.getPrivacyLinkEnglishUrl());
-        // }
-        // if (StringUtils.isNotBlank(cdnSettings.getTermsLinkEnglishUrl())) {
-        // modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(), cdnSettings.getTermsLinkEnglishUrl());
-        // }
-        //
-        // } else {
-        // if (StringUtils.isNotBlank(cdnSettings.getPrivacyLinkFrenchUrl())) {
-        // modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(),
-        // cdnSettings.getPrivacyLinkFrenchUrl());
-        // }
-        // if (StringUtils.isNotBlank(cdnSettings.getTermsLinkFrenchUrl())) {
-        // modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(),
-        // cdnSettings.getTermsLinkFrenchUrl());
-        // }
-        // }
+        if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
+            if (StringUtils.isNotBlank(cdnSettings.getPrivacy().getEnglish().getUrl())) {
+                modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(),
+                    cdnSettings.getPrivacy().getEnglish().getUrl());
+            }
+            if (StringUtils.isNotBlank(cdnSettings.getTerms().getEnglish().getUrl())) {
+                modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(),
+                    cdnSettings.getTerms().getEnglish().getUrl());
+            }
+
+        } else {
+            if (StringUtils.isNotBlank(cdnSettings.getPrivacy().getFrench().getUrl())) {
+                modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(),
+                    cdnSettings.getPrivacy().getFrench().getUrl());
+            }
+            if (StringUtils.isNotBlank(cdnSettings.getTerms().getFrench().getUrl())) {
+                modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(),
+                    cdnSettings.getTerms().getFrench().getUrl());
+            }
+        }
     }
 
     /**
@@ -194,19 +163,19 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     private void setContactInformation(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
         List<ContactInformation> contactInformationList = new ArrayList<>();
         ContactInformation contactInformation = new ContactInformation();
-        // if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
-        // contactInformation.setHref(cdnSettings.getContactLinkEnglishUrl());
-        // contactInformation
-        // .setText(applicationMessageSource.getMessage("cdn.contact.link.text", null, Locale.CANADA));
-        // } else {
-        // contactInformation.setHref(cdnSettings.getContactLinkFrenchUrl());
-        // contactInformation
-        // .setText(applicationMessageSource.getMessage("cdn.contact.link.text", null, Locale.CANADA_FRENCH));
-        // }
-        // contactInformationList.add(contactInformation);
-        // if (StringUtils.isNotBlank(contactInformation.getHref())) {
-        // modelAndView.addObject(WETModelKey.CONTACT_LINK.wetAttributeName(), contactInformationList);
-        // }
+        if (LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage())) {
+            contactInformation.setHref(cdnSettings.getContact().getEnglish().getUrl());
+            contactInformation
+                .setText(applicationMessageSource.getMessage("cdn.contact.link.text", null, Locale.CANADA));
+        } else {
+            contactInformation.setHref(cdnSettings.getContact().getFrench().getUrl());
+            contactInformation
+                .setText(applicationMessageSource.getMessage("cdn.contact.link.text", null, Locale.CANADA_FRENCH));
+        }
+        contactInformationList.add(contactInformation);
+        if (StringUtils.isNotBlank(contactInformation.getHref())) {
+            modelAndView.addObject(WETModelKey.CONTACT_LINK.wetAttributeName(), contactInformationList);
+        }
     }
 
     /**
@@ -226,9 +195,9 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
         }
         List<ExitTransaction> exitTransactionList = new ArrayList<>();
         ExitTransaction exitTransaction = new ExitTransaction();
-        // exitTransaction.setHref(request.getContextPath() + cdnSettings.getExitTransactionLinkUrl());
-        // exitTransaction.setTitle(applicationMessageSource.getMessage("cdn.exit.transaction.link.label", null,
-        // LocaleContextHolder.getLocale()));
+        exitTransaction.setHref(request.getContextPath() + cdnSettings.getExit().getUrl());
+        exitTransaction.setTitle(applicationMessageSource.getMessage("cdn.exit.transaction.link.label", null,
+            LocaleContextHolder.getLocale()));
 
         exitTransactionList.add(exitTransaction);
 
@@ -453,155 +422,6 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
         exitScript.setExitExcludedDomains(cdnSettings.getLeavingsecuresitewarning().getExcludeddomains());
 
         modelAndView.addObject(WETModelKey.LEAVING_SECURE_SITE.wetAttributeName(), exitScript);
-    }
-
-    /**
-     * Sets the page template properties.
-     *
-     * @param cdnSettings the cdn settings
-     * @param messageSource the message source
-     */
-    private void setPageTemplateProperties(WETSettings cdnSettings, WETResourceBundle messageSource) {
-
-        Set<String> keys = messageSource.getKeys(messageSource.getBasename(), Locale.CANADA);
-        if (CollectionUtils.isEmpty(keys)) {
-            return; // No page template overrides
-        }
-
-        if (keys.contains("cdn.url")) {
-            cdnSettings.setUrl(messageSource.getMessage("cdn.url", null, Locale.CANADA));
-        }
-        if (keys.contains("cdn.environment")) {
-            cdnSettings.setEnvironment(messageSource.getMessage("cdn.environment", null, Locale.CANADA));
-        }
-
-        // if (keys.contains("cdn.goc.webtemplate.showpostcontent")) {
-        // cdnSettings.setShowPostContent(
-        // Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showpostcontent", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.goc.webtemplate.showfeatures")) {
-        // cdnSettings.setShowFeatures(
-        // Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showfeatures", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.goc.webtemplate.showfooter")) {
-        // cdnSettings.setShowFooter(
-        // Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showfooter", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.goc.webtemplate.showfeedbacklink")) {
-        // cdnSettings.setShowFeedback(
-        // Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showfeedbacklink", null, Locale.CANADA)));
-        // }
-        //
-        // if (keys.contains("cdn.goc.webtemplate.showsharepagelink")) {
-        // cdnSettings.setShowShare(Boolean
-        // .valueOf(messageSource.getMessage("cdn.goc.webtemplate.showsharepagelink", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.session.timeout.enabled")) {
-        // cdnSettings.setSessionEnabled(
-        // Boolean.valueOf(messageSource.getMessage("cdn.session.timeout.enabled", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.session.inactivity.value")) {
-        // cdnSettings.setSessionInactivity(
-        // Integer.valueOf(messageSource.getMessage("cdn.session.inactivity.value", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.session.reactiontime.value")) {
-        // cdnSettings.setSessionReactionTime(
-        // Integer.valueOf(messageSource.getMessage("cdn.session.reactiontime.value", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.session.sessionalive.value")) {
-        // cdnSettings.setSessionAlive(
-        // Integer.valueOf(messageSource.getMessage("cdn.session.sessionalive.value", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.session.logouturl")) {
-        // cdnSettings.setLogoutUrl(messageSource.getMessage("cdn.session.logouturl", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.session.refreshcallback")) {
-        // cdnSettings
-        // .setRefreshCallback(messageSource.getMessage("cdn.session.refreshcallback", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.session.refreshcallbackurl")) {
-        // cdnSettings
-        // .setRefreshCallbackUrl(messageSource.getMessage("cdn.session.refreshcallbackurl", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.session.refreshonclick")) {
-        // cdnSettings.setRefreshOnClick(
-        // Boolean.valueOf(messageSource.getMessage("cdn.session.refreshonclick", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.session.refreshlimit.value")) {
-        // cdnSettings.setRefreshLimit(
-        // Integer.valueOf(messageSource.getMessage("cdn.session.refreshlimit.value", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.session.method")) {
-        // cdnSettings.setRequestMethod(messageSource.getMessage("cdn.session.method", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.session.additionaldata")) {
-        // cdnSettings.setAdditionalData(messageSource.getMessage("cdn.session.additionaldata", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.goc.webtemplate.showsearch")) {
-        // cdnSettings.setShowSearch(
-        // Boolean.valueOf(messageSource.getMessage("cdn.goc.webtemplate.showsearch", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.leavingsecuresitewarning.enabled")) {
-        // cdnSettings.setLeavingSecureSiteWarningEnabled(
-        // Boolean.valueOf(messageSource.getMessage("cdn.leavingsecuresitewarning.enabled", null, Locale.CANADA)));
-        // }
-        // if (keys.contains("cdn.leavingsecuresitewarning.redirecturl")) {
-        // cdnSettings.setLeavingSecureSiteWarningRedirectUrl(
-        // messageSource.getMessage("cdn.leavingsecuresitewarning.redirecturl", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.leavingsecuresitewarning.excludeddomains")) {
-        // cdnSettings.setLeavingSecureSiteWarningExcludedDomains(
-        // messageSource.getMessage("cdn.leavingsecuresitewarning.excludeddomains", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.contact.link.english.url")) {
-        // cdnSettings.setContactLinkEnglishUrl(
-        // messageSource.getMessage("cdn.contact.link.english.url", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.contact.link.french.url")) {
-        // cdnSettings
-        // .setContactLinkFrenchUrl(messageSource.getMessage("cdn.contact.link.french.url", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.terms.link.english.url")) {
-        // cdnSettings
-        // .setTermsLinkEnglishUrl(messageSource.getMessage("cdn.terms.link.english.url", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.terms.link.french.url")) {
-        // cdnSettings
-        // .setTermsLinkFrenchUrl(messageSource.getMessage("cdn.terms.link.french.url", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.privacy.link.english.url")) {
-        // cdnSettings.setPrivacyLinkEnglishUrl(
-        // messageSource.getMessage("cdn.privacy.link.english.url", null, Locale.CANADA));
-        // }
-        // if (keys.contains("cdn.privacy.link.french.url")) {
-        // cdnSettings
-        // .setPrivacyLinkFrenchUrl(messageSource.getMessage("cdn.privacy.link.french.url", null, Locale.CANADA));
-        // }
-    }
-
-    /**
-     * Gets the WET resource bundle.
-     *
-     * @param view the thymeleaf view name
-     * @return the bundle
-     */
-    private WETResourceBundle getBundle(String view) {
-
-        if (StringUtils.isBlank(thymeleafFolder)) {
-            throw new java.lang.IllegalArgumentException("Cannot find spring.thymeleaf.prefix application property.");
-        }
-        int thymleafFolderPosition = thymeleafFolder.indexOf(THYMELEAF_PREFIX_SEARCH_STRING);
-        if (thymleafFolderPosition == -1) {
-            throw new java.lang.IllegalArgumentException("Cannot find valid spring.thymeleaf.prefix key/value.");
-        }
-
-        StringBuilder baseName = new StringBuilder();
-        WETResourceBundle pageMessageSource = new WETResourceBundle();
-        baseName.append(thymeleafFolder.substring(thymleafFolderPosition + THYMELEAF_PREFIX_SEARCH_STRING.length()))
-            .append(view);
-        pageMessageSource.setBasenames(baseName.toString());
-
-        return pageMessageSource;
     }
 
 }

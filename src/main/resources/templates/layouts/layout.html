@@ -69,12 +69,10 @@
           var defPreFooter = document.getElementById("def-preFooter");
           defPreFooter.outerHTML = wet.builder.preFooter({
               cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
-              dateModified: /*[[#{project.build.date}]]*/ "",
+              dateModified: /*[[#{project.build.date}]]*/ "2017-01-01",
               showPostContent: /*[[${cdn.goc.webtemplate.showpostcontent}]]*/ true, 
               showFeedback: /*[[${cdn.goc.webtemplate.showfeedbacklink}]]*/ true,
-			  showShare: /*[[${cdn.goc.webtemplate.showsharepagelink}]]*/ false,
-			  screenIdentifier: "",
-			  versionIdentifier: ""
+			  showShare: /*[[${cdn.goc.webtemplate.showsharepagelink}]]*/ false
           });
       </script>
     </main>    
