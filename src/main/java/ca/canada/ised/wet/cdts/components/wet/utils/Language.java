@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 /**
  * The <code>Language</code> class represents all languages currently supported
  * by Strategis. It uses the ISO code language. Supported languages are:
@@ -32,12 +34,8 @@ public final class Language {
 	/** French constant. */
 	public static final String FRANCAIS = "fra";
 
-	/** Spanish constant. */
-	public static final String SPANISH = "spa";
-
 	/** Array of supported languages. */
-	private static String[] supportedLanguages = { Language.ENGLISH, Language.FRENCH, Language.FRANCAIS,
-			Language.SPANISH };
+	private static String[] supportedLanguages = { Language.ENGLISH, Language.FRENCH, Language.FRANCAIS };
 
 	/** Map supported languages to locales. */
 	private static final Map<String, Locale> LANG_TO_LOCALE_MAP = new HashMap<>();
@@ -45,7 +43,6 @@ public final class Language {
 		LANG_TO_LOCALE_MAP.put(ENGLISH, new Locale("en", "CA"));
 		LANG_TO_LOCALE_MAP.put(FRENCH, new Locale("fr", "CA"));
 		LANG_TO_LOCALE_MAP.put(FRANCAIS, new Locale("fr", "CA"));
-		LANG_TO_LOCALE_MAP.put(SPANISH, new Locale("es", "ES"));
 	}
 
 	/** Map supported locales to languages. */
@@ -58,7 +55,6 @@ public final class Language {
 		LOCALE_TO_LANG_MAP.put(new Locale("en", "US"), ENGLISH);
 		LOCALE_TO_LANG_MAP.put(new Locale("en", "GB"), ENGLISH);
 		LOCALE_TO_LANG_MAP.put(new Locale("fr", "CA"), FRENCH);
-		LOCALE_TO_LANG_MAP.put(new Locale("es", "ES"), SPANISH);
 	}
 
 	/**
@@ -149,6 +145,15 @@ public final class Language {
 			isValidLocale = LOCALE_TO_LANG_MAP.containsKey(locale);
 		}
 		return isValidLocale;
+	}
+
+	/**
+	 * Is the current locale English?
+	 * 
+	 * @return <code>boolean</code>
+	 */
+	public static boolean isEnglish() {
+		return LocaleContextHolder.getLocale().getLanguage().equals(Locale.CANADA.getLanguage());
 	}
 
 }

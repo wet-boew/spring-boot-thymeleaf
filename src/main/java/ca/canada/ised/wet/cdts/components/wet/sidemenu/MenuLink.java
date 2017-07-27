@@ -5,6 +5,8 @@ package ca.canada.ised.wet.cdts.components.wet.sidemenu;
 
 import java.io.Serializable;
 
+import ca.canada.ised.wet.cdts.components.wet.utils.Language;
+
 /**
  * The Class MenuLink contains information required by the WET4 side menu.
  *
@@ -26,13 +28,20 @@ public class MenuLink implements Serializable {
     /** The url for the menu. */
     private String href;
 
+    /** Does the link open in a new window? */
+    private boolean newWindow;
+
     /**
      * Gets the menu text.
      *
      * @return the text
      */
     public String getText() {
-        return text;
+        if (Language.isEnglish()) {
+            return textEn;
+        } else {
+            return textFr;
+        }
     }
 
     /**
@@ -96,6 +105,20 @@ public class MenuLink implements Serializable {
      */
     public void setTextFr(String textFr) {
         this.textFr = textFr;
+    }
+
+    /**
+     * @return the newWindow
+     */
+    public boolean isNewWindow() {
+        return newWindow;
+    }
+
+    /**
+     * @param newWindow the newWindow to set
+     */
+    public void setNewWindow(boolean newWindow) {
+        this.newWindow = newWindow;
     }
 
 }
