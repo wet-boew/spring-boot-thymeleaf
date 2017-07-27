@@ -71,7 +71,7 @@
               cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
               dateModified: /*[[#{project.build.date}]]*/ "2017-01-01",
               showPostContent: /*[[${cdn.goc.webtemplate.showpostcontent}]]*/ true, 
-              showFeedback: /*[[${cdn.goc.webtemplate.showfeedbacklink}]]*/ true,
+              showFeedback: /*[[${cdn.goc.webtemplate.showfeedbacklink}]]*/ false,
 			  showShare: /*[[${cdn.goc.webtemplate.showsharepagelink}]]*/ false
           });
       </script>
@@ -97,9 +97,9 @@
         document.write(wet.builder.refFooter({
             cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
             jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false,
-            exitScript: /*[[${cdn.leavingsecuresitewarning.enabled}]]*/ "",
-            exitURL: /*[[${cdn.leavingsecuresitewarning.redirecturl}]]*/ "/",
-            exitMsg: "",
+            exitScript: /*[[${cdn.leavingsecuresitewarning.enabled}]]*/ false,
+            exitURL: /*[[${cdn.leavingsecuresitewarning.redirecturl}]]*/ "#",
+            exitMsg: "You are about to leave a secure site, do you wish to continue?",
             exitDomains: /*[[${cdn.leavingsecuresitewarning.excludeddomains}]]*/ {}
         }));
     </script>         

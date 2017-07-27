@@ -1,51 +1,52 @@
 <!DOCTYPE html>
 <!--[if lt IE 9]><html class="no-js lt-ie9" dir="ltr"><![endif]-->
 <!--[if gt IE 8]><!-->
-<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" data-th-lang="__#{lang}__" dir="ltr">
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" data-th-lang="#{lang}" dir="ltr">
 <!--<![endif]-->
   <head>
     <meta charset="utf-8" />
-     <!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
-          wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
-    <title>Temporary Title</title>
+    <!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
+         wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
+    <title>Temporary title</title>
     <meta content="width=device-width,initial-scale=1" name="viewport" />
     <!-- Load closure template scripts -->
     <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/soyutils.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/cdts/compiled/soyutils.js'"></script>
-    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/cdts/compiled/wet-' + #{lang} + '.js'"></script>    <noscript>
+    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/cdts/compiled/wet-' + #{lang} + '.js'"></script>
+    <noscript>
       <!-- Write closure fall-back static file -->
       <div data-th-replace="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/refTop'"></div>
     </noscript>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
+      /*<![CDATA[*/
       document.write(wet.builder.refTop({
-          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
-          jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false
+        cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+        jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false
       }));
+      /*]]>*/
     </script>
-    <!-- Write external CSS elements here. Added through 'externalCssIncludes' model attribute. -->
-    <!--/*/ <th:block th:each="externalCssInculde : ${externalCssIncludes}"> /*/-->
-    <link rel="stylesheet" type="text/css" data-th-href="@{__${externalCssInculde}__}" />
-    <!--/*/ </th:block> /*/-->
     <!-- Write custom CSS elements here. Added through 'cssIncludes' model attribute. -->
     <!--/*/ <th:block th:each="cssInclude : ${cssIncludes}"> /*/-->
     <link rel="stylesheet" type="text/css" data-th-href="@{__${cssInclude}__}" />
-    <!--/*/ </th:block> /*/--> 
-    
-    <!-- Ask Vernon if this is still rquired.  CSS file is not included in the project. -->
-    <!-- link rel="stylesheet" type="text/css"  href="css/breadcrumb.css" / -->
+    <!--/*/ </th:block> /*/-->       
+    <!-- Write external CSS elements here. Added through 'externalCssIncludes' model attribute. -->
+    <!--/*/ <th:block th:each="externalCssInculde : ${externalCssIncludes}"> /*/-->
+    <link rel="stylesheet" type="text/css" data-th-href="@{__${externalCssInculde}__}" />
+    <!--/*/ </th:block> /*/-->      
   </head>
-  <body vocab="http://schema.org/" typeof="WebPage">	
+  <body vocab="http://schema.org/" typeof="WebPage">
     <!-- Insert session timeout here. -->
     <!--/*/ <th:block  data-th-if="${cdn.session.timeout.enabled}" data-th-utext="${wetSessionTimeout}"></th:block> /*/-->
     <div id="def-top">
       <!-- Write closure fall-back static file -->
       <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/top-' + #{lang}"></div>
-    </div>
+    </div>    
     <!-- Write closure template -->
     <script data-th-inline="javascript">
     	/*<![CDATA[*/
         var defTop = document.getElementById("def-top");
         defTop.outerHTML = wet.builder.top({
+          topSecMenu: true,
           cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
           search: /*[[${cdn.goc.webtemplate.showsearch}]]*/ true,
           lngLinks: [{
@@ -69,36 +70,41 @@
             <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/preFooter-' + #{lang}"></div>
           </div>
           <!-- Write closure template -->
-	      <script data-th-inline="javascript">
-	          var defPreFooter = document.getElementById("def-preFooter");
-	          defPreFooter.outerHTML = wet.builder.preFooter({
-	              cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
-	              dateModified: /*[[#{project.build.date}]]*/ "2017-01-01",
-	              showPostContent: /*[[${cdn.goc.webtemplate.showpostcontent}]]*/ true, 
-	              showFeedback: /*[[${cdn.goc.webtemplate.showfeedbacklink}]]*/ true,
-				  showShare: /*[[${cdn.goc.webtemplate.showsharepagelink}]]*/ false
-	          });
-	      </script>
-        </main>	
+          <script data-th-inline="javascript">
+              /*<![CDATA[*/
+              var defPreFooter = document.getElementById("def-preFooter");
+              defPreFooter.outerHTML = wet.builder.preFooter({
+                  cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+                  dateModified: /*[[#{project.build.date}]]*/ "2017-01-01",
+                  showPostContent: /*[[${cdn.goc.webtemplate.showpostcontent}]]*/ true, 
+                  showFeedback: /*[[${cdn.goc.webtemplate.showfeedbacklink}]]*/ false,
+    			  showShare: /*[[${cdn.goc.webtemplate.showsharepagelink}]]*/ false
+              });
+              /*]]>*/
+          </script>
+        </main>
         <nav class="wb-sec col-md-3 col-md-pull-9" typeof="SiteNavigationElement" id="wb-sec" role="navigation">
           <!-- Write closure fall-back static file -->
           <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/secMenu-' + #{lang}"></div>
         </nav>
         <!-- Write closure template -->
         <script data-th-inline="javascript">
-            var secondarymenu = document.getElementById("wb-sec");
-            secondarymenu.innerHTML = wet.builder.secmenu({
-            	sections: /*[[${sections}]]*/ {}
-            });
-        </script>	
+          /*<![CDATA[*/
+          var secondarymenu = document.getElementById("wb-sec");
+          secondarymenu.innerHTML = wet.builder.secmenu({
+          	sections: /*[[${sections}]]*/ {}
+          });
+          /*]]>*/
+        </script>
       </div>
-    </div>        
+    </div>    
     <div id="def-footer">
       <!-- Write closure fall-back static file -->
       <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/footer-' + #{lang}"></div>
-    </div>
+    </div>        
     <!-- Write closure template -->
     <script data-th-inline="javascript">
+        /*<![CDATA[*/
         var defFooter = document.getElementById("def-footer");
         defFooter.outerHTML = wet.builder.footer({
             cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
@@ -108,18 +114,22 @@
 	        //termsLink: /*[[${termsLink}]]*/ "/",
 	        //privacyLink: /*[[${privacyLink}]]*/ "/" 
         });
-    </script> 
+        /*]]>*/
+    </script>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
+        /*<![CDATA[*/
         document.write(wet.builder.refFooter({
             cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
             jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false,
-            exitScript: /*[[${cdn.leavingsecuresitewarning.enabled}]]*/ "",
-            exitURL: /*[[${cdn.leavingsecuresitewarning.redirecturl}]]*/ "/",
-            exitMsg: "",
+            exitScript: /*[[${cdn.leavingsecuresitewarning.enabled}]]*/ false,
+            exitURL: /*[[${cdn.leavingsecuresitewarning.redirecturl}]]*/ "#",
+            exitMsg: "You are about to leave a secure site, do you wish to continue?",
             exitDomains: /*[[${cdn.leavingsecuresitewarning.excludeddomains}]]*/ {}
         }));
-    </script>      
+        /*]]>*/
+    </script>         
+    
     <!-- Additional JavaScript includes.  Added through jsLibraryIncludes model attribute. -->
     <!--/*/ <th:block th:each="jsLibraryInclude : ${jsLibraryIncludes}"> /*/-->
     <script type="text/javascript" data-th-src="@{__${jsLibraryInclude}__}"></script>
@@ -131,5 +141,6 @@
     <!--/*/ </th:block> /*/-->
     
     <script type="text/javascript" data-th-src="@{/js/breadcrumbs.js}" ></script>
+    
   </body>
 </html>
