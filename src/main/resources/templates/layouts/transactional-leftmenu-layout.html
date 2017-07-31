@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--[if lt IE 9]><html class="no-js lt-ie9" dir="ltr"><![endif]-->
 <!--[if gt IE 8]><!-->
-<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" data-th-lang="__#{lang}__" dir="ltr">
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" data-th-lang="#{lang}" dir="ltr">
 <!--<![endif]-->
   <head>
     <meta charset="utf-8" />
@@ -18,9 +18,12 @@
     </noscript>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
-        document.write(wet.builder.refTop({
-          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai"
-        }));
+      /*<![CDATA[*/
+      document.write(wet.builder.refTop({
+          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+          jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false
+      }));
+      /*]]>*/
     </script>
     <!-- Write external CSS elements here. Added through 'externalCssIncludes' model attribute. -->
     <!--/*/ <th:block th:each="externalCssInculde : ${externalCssIncludes}"> /*/-->
@@ -31,7 +34,7 @@
     <link rel="stylesheet" type="text/css" data-th-href="@{__${cssInclude}__}" />
     <!--/*/ </th:block> /*/-->
   </head>
-  <body vocab="http://schema.org/" typeof="WebPage">		
+  <body vocab="http://schema.org/" typeof="WebPage">        
     <!-- Insert session timeout here. -->
     <!--/*/ <th:block  data-th-if="${cdn.session.timeout.enabled}" data-th-utext="${wetSessionTimeout}"></th:block> /*/-->
     <div id="def-top">
@@ -43,15 +46,17 @@
     </div>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
-	    var defTop = document.getElementById("def-top");
-	    defTop.outerHTML = wet.builder.top({
-	        cdnEnv: /*[[${cdn.environment}]]*/ "prod",
-	        topSecMenu: true,
-	        search: false,
-	        siteMenu: false,
-	        showPreContent: false,
-	        breadcrumbs: /*[[${exitTransactionLink}]]*/ [{'href':'/app/scr/sis/template/','title':'Exit transaction'}]
-	    });   
+      /*<![CDATA[*/
+      var defTop = document.getElementById("def-top");
+      defTop.outerHTML = wet.builder.top({
+          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+          topSecMenu: true,
+          search: false,
+          siteMenu: false,
+          showPreContent: false,
+          breadcrumbs: /*[[${breadcrumbs}]]*/ [{'acronym':'CDN','href':'http://www.canada.ca/en/index.html','title':'Home'}]
+      });
+      /*]]>*/
     </script>
     <div class="container">
       <div class="row">
@@ -59,61 +64,69 @@
           <!-- the main content -->
           <div layout:fragment="content">Main content goes here.</div>
           <!-- end main content -->
-	      <div id="def-preFooter">
-	        <!-- Write closure fall-back static file -->
+          <div id="def-preFooter">
+            <!-- Write closure fall-back static file -->
             <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/preFooter-' + #{lang}"></div>
-	      </div>   
+          </div>   
           <!-- Write closure template -->
-	      <script data-th-inline="javascript">
-	          var defPreFooter = document.getElementById("def-preFooter");
-	          defPreFooter.outerHTML = wet.builder.preFooter({
-	              cdnEnv: /*[[${cdn.environment}]]*/ "prod",
-	              dateModified: /*[[#{project.build.date}]]*/ "",
-	              showPostContent: false, 
-				  showFeedback: false,
-				  showShare: false
-	          });
-	      </script>
+          <script data-th-inline="javascript">
+            /*<![CDATA[*/
+            var defPreFooter = document.getElementById("def-preFooter");
+            defPreFooter.outerHTML = wet.builder.preFooter({
+                cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+                dateModified: /*[[#{project.build.date}]]*/ "2017-01-01",
+                showPostContent: false, 
+                showFeedback: false,
+                showShare: false
+            });
+            /*]]>*/
+          </script>
         </main>
         <nav class="wb-sec col-md-3 col-md-pull-9" typeof="SiteNavigationElement" id="wb-sec" role="navigation">
-          Write closure fall-back static file     
+          <!-- Write closure fall-back static file -->     
           <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/secMenu-' + #{lang}"></div>    
         </nav>
         <!-- Write closure template -->
         <script data-th-inline="javascript">
-	        var secondarymenu = document.getElementById("wb-sec");
-	        secondarymenu.innerHTML = wet.builder.secmenu({
-	        	sections: /*[[${sections}]]*/ {}
-	        });
-        </script>	
+          /*<![CDATA[*/
+          var secondarymenu = document.getElementById("wb-sec");
+          secondarymenu.innerHTML = wet.builder.secmenu({
+              sections: /*[[${sections}]]*/ {}
+          });
+          /*]]>*/
+        </script>    
       </div>
-    </div>        	
+    </div>            
     <div id="def-footer">
       <!-- Write closure fall-back static file -->
       <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/transactFooter-' + #{lang}"></div>
     </div>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
+      /*<![CDATA[*/
         var defFooter = document.getElementById("def-footer");
         defFooter.outerHTML = wet.builder.footer({
-            cdnEnv: /*[[${cdn.environment}]]*/ "prod",
-		    showFooter: false,
-		    showFeatures: false,
-		    contactLinks: /*[[${contactLink}]]*/ [{text:"Contact information",href:"/"}],
-	        termsLink: /*[[${termsLink}]]*/ "/",
-	        privacyLink: /*[[${privacyLink}]]*/ "/"
-        });        
+            cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+            showFooter: false,
+            showFeatures: false,
+            contactLinks: /*[[${contactLink}]]*/ [{text:"Contact information",href:"/"}]
+            // termsLink: /*[[${termsLink}]]*/ "/",
+            // privacyLink: /*[[${privacyLink}]]*/ "/"
+        });
+      /*]]>*/
     </script>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
+      /*<![CDATA[*/
         document.write(wet.builder.refFooter({
-            cdnEnv: /*[[${cdn.environment}]]*/ "prod",
-            exitScript: /*[[${leavingSecureSite.exitScriptEnabled}]]*/ "",
-            exitURL: /*[[${leavingSecureSite.exitUrl}]]*/ "/",
-            exitMsg: /*[[${leavingSecureSite.exitMessage}]]*/ "",
-            exitDomains: /*[[${leavingSecureSite.exitExcludedDomains}]]*/ {}
-            // Render leaving secure site warning.
+            cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+            jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false,
+            exitScript: /*[[${cdn.leavingsecuresitewarning.enabled}]]*/ false,
+            exitURL: /*[[${cdn.leavingsecuresitewarning.redirecturl}]]*/ "#",
+            exitMsg: "You are about to leave a secure site, do you wish to continue?",
+            exitDomains: /*[[${cdn.leavingsecuresitewarning.excludeddomains}]]*/ {}
         }));
+      /*]]>*/
     </script>
     <!-- Additional JavaScript includes.  Added through jsLibraryIncludes model attribute. -->
     <!--/*/ <th:block th:each="jsLibraryInclude : ${jsLibraryIncludes}"> /*/-->

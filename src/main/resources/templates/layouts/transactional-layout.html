@@ -47,6 +47,7 @@
     </div>
     <!-- Write closure template -->
     <script data-th-inline="javascript">    
+      /*<![CDATA[*/
         var defTop = document.getElementById("def-top");
         defTop.outerHTML = wet.builder.top({
             cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
@@ -55,6 +56,7 @@
             showPreContent: false,
             breadcrumbs: /*[[${breadcrumbs}]]*/ [{'acronym':'CDN','href':'http://www.canada.ca/en/index.html','title':'Home'}]
         });
+      /*]]>*/
     </script>    
     <main role="main" property="mainContentOfPage" class="container">
       <!-- the main content -->
@@ -72,12 +74,12 @@
               cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
               dateModified: /*[[#{project.build.date}]]*/ "2017-01-01",
               showPostContent: false, 
-			  showFeedback: false,
-			  showShare: false
+              showFeedback: false,
+              showShare: false
           });
         /*]]>*/
       </script>      
-    </main>	
+    </main>    
     <div id="def-footer">
       <!-- Write closure fall-back static file -->
       <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/footer-' + #{lang}"></div>
@@ -88,11 +90,11 @@
         var defFooter = document.getElementById("def-footer");
         defFooter.outerHTML = wet.builder.footer({
             cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
-		    showFooter: false,
-		    showFeatures: false,
-		    contactLinks: /*[[${contactLink}]]*/ [{text:"Contact information",href:"/"}]
-	        // termsLink: /*[[${termsLink}]]*/ "/",
-	        // privacyLink: /*[[${privacyLink}]]*/ "/"
+            showFooter: false,
+            showFeatures: false,
+            contactLinks: /*[[${contactLink}]]*/ [{text:"Contact information",href:"/"}]
+            // termsLink: /*[[${termsLink}]]*/ "/",
+            // privacyLink: /*[[${privacyLink}]]*/ "/"
         });
       /*]]>*/
     </script>    
