@@ -18,10 +18,12 @@
     </noscript>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
+      /*<![CDATA[*/
       document.write(wet.builder.refTop({
         cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
         jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false
       }));
+      /*]]>*/
     </script>
     <!-- Write custom CSS elements here. Added through 'cssIncludes' model attribute. -->
     <!--/*/ <th:block th:each="cssInclude : ${cssIncludes}"> /*/-->
@@ -66,6 +68,7 @@
       </div>
       <!-- Write closure template -->
       <script data-th-inline="javascript">
+        /*<![CDATA[*/
           var defPreFooter = document.getElementById("def-preFooter");
           defPreFooter.outerHTML = wet.builder.preFooter({
               cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
@@ -74,6 +77,7 @@
               showFeedback: /*[[${cdn.goc.webtemplate.showfeedbacklink}]]*/ false,
 			  showShare: /*[[${cdn.goc.webtemplate.showsharepagelink}]]*/ false
           });
+        /*]]>*/
       </script>
     </main>    
     <div id="def-footer">
@@ -82,6 +86,7 @@
     </div>        
     <!-- Write closure template -->
     <script data-th-inline="javascript">
+      /*<![CDATA[*/
         var defFooter = document.getElementById("def-footer");
         defFooter.outerHTML = wet.builder.footer({
             cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
@@ -91,9 +96,11 @@
 	        //termsLink: /*[[${termsLink}]]*/ "/",
 	        //privacyLink: /*[[${privacyLink}]]*/ "/" 
         });
+      /*]]>*/
     </script>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
+      /*<![CDATA[*/
         document.write(wet.builder.refFooter({
             cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
             jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false,
@@ -102,6 +109,7 @@
             exitMsg: "You are about to leave a secure site, do you wish to continue?",
             exitDomains: /*[[${cdn.leavingsecuresitewarning.excludeddomains}]]*/ {}
         }));
+      /*]]>*/
     </script>         
     <!-- Additional JavaScript includes.  Added through jsLibraryIncludes model attribute. -->
     <!--/*/ <th:block th:each="jsLibraryInclude : ${jsLibraryIncludes}"> /*/-->
