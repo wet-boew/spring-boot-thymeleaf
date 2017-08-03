@@ -9,6 +9,8 @@
          wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
     <title>Temporary Title</title>
     <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <!-- Additional analytics, if required. -->
+    <!--/*/ <th:block th:replace="analytics/analytics-header"></th:block> /*/-->    
     <!-- Load closure template scripts -->
     <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/soyutils.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/cdts/compiled/soyutils.js'"></script>
     <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/cdts/compiled/wet-' + #{lang} + '.js'"></script>
@@ -121,6 +123,9 @@
     <script type="text/javascript" data-th-src="@{__${jsInclude}__}"></script>
     <!--/*/ </th:block> /*/-->  
     
-    <script type="text/javascript" data-th-src="@{/js/breadcrumbs.js}" ></script>     
+    <script type="text/javascript" data-th-src="@{/js/breadcrumbs.js}" ></script>
+    
+    <!-- Additional analytics, if required. -->
+    <!--/*/ <th:block th:replace="analytics/analytics-footer"></th:block> /*/-->        
   </body>
 </html>
