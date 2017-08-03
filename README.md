@@ -2,6 +2,16 @@
 
 This is a Spring Boot Starter that uses Thymeleaf to implement CDTS.
 
+## Benefits of using this version of CDTS.
+
+Since this version is based on Spring Boot, simply adding the dependency to your POM file is enough to do most of the configuration.  The only config requried after that is to add the `WETTemplateInterceptor` to your list of interceptors.
+
+After that, there is no need to extend any beans!  Just write normal Spring MVC controllers and make sure your Thymeleaf templates reference one of the provided layouts (currently default and transactional layouts for internet use.  Intranet templates haven't been added, yet).
+
+This makes getting started with CDTS very easy, and your code will not rely on anything from the CDTS library specifically.
+
+Also, since the templates are based on Thymeleaf, they are plain HTML5 by default and require no tags.  This makes them much easier to read.
+
 ## Building wet-cdts-spring-boot-thymeleaf-starter
 
 * Clone the repository
