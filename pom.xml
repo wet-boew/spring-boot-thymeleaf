@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -10,9 +11,9 @@
 
   <groupId>ca.canada.ised.wet.cdts</groupId>
   <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
-  
+
   <!-- Version matches the WET version supported by CDTS. -->
-  
+
   <version>4.0.25.2-SNAPSHOT</version>
 
   <name>WET CDTS Spring Boot Thymeleaf Starter</name>
@@ -99,7 +100,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-    </dependency>    
+    </dependency>
 
     <!-- Commons lang for things like equals, hashcode, etc. -->
     <dependency>
@@ -129,13 +130,13 @@
         </executions>
       </plugin>
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.3</version>
-          <configuration>
-            <goals>deploy</goals>
-          </configuration>
-      </plugin>      
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <goals>deploy</goals>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -145,5 +146,5 @@
     <url>https://github.com/${git.project.id}/${git.repo.name}</url>
     <tag>HEAD</tag>
   </scm>
-  
+
 </project>
