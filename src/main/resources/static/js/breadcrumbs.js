@@ -12,21 +12,37 @@ var ELLIPSES = "...";
 var ELLIPSES_DATA_STRING = "ellipsesData";
 var WB_BC_ID = "#wb-bc";
 
- $(window).on("load resize", function(){
-     var list  = $(".breadcrumb").children();
-     var size  = list.size();
-    
-     if ( window.innerWidth <= MOBILE_SCREEN_SIZE && size >= MIN_RESPONSIVE_SIZE) {
-         list.each(function( index ) {
-            setResponsiveInfo(this, index, size - 2);
-         });
-     } else {
-         list.each(function( index ) {
-               restoreEllipsesInfo( this, index, size);
-               $(this).show();
-         });
-     }
- });      
+jQuery(document).on("wb-ready.wb resize", function(event) {
+  var list  = $(".breadcrumb").children();
+  var size  = list.size();
+ 
+  if ( window.innerWidth <= MOBILE_SCREEN_SIZE && size >= MIN_RESPONSIVE_SIZE) {
+      list.each(function( index ) {
+         setResponsiveInfo(this, index, size - 2);
+      });
+  } else {
+      list.each(function( index ) {
+            restoreEllipsesInfo( this, index, size);
+            $(this).show();
+      });
+  }
+}); 
+
+// $(window).on("load resize", function(){
+//     var list  = $(".breadcrumb").children();
+//     var size  = list.size();
+//    
+//     if ( window.innerWidth <= MOBILE_SCREEN_SIZE && size >= MIN_RESPONSIVE_SIZE) {
+//         list.each(function( index ) {
+//            setResponsiveInfo(this, index, size - 2);
+//         });
+//     } else {
+//         list.each(function( index ) {
+//               restoreEllipsesInfo( this, index, size);
+//               $(this).show();
+//         });
+//     }
+// });      
  
  // Restore original info that was replaced by the ellipses (...)
  function restoreEllipsesInfo(obj, index) {
