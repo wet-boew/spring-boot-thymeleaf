@@ -10,10 +10,10 @@
 
   <groupId>ca.canada.ised.wet.cdts</groupId>
   <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
-  
+
   <!-- Version matches the WET version supported by CDTS. -->
-  
-  <version>4.0.25.2-SNAPSHOT</version>
+
+  <version>4.0.25.3-SNAPSHOT</version>
 
   <name>WET CDTS Spring Boot Thymeleaf Starter</name>
   <packaging>jar</packaging>
@@ -99,7 +99,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-    </dependency>    
+    </dependency>
 
     <!-- Commons lang for things like equals, hashcode, etc. -->
     <dependency>
@@ -129,13 +129,13 @@
         </executions>
       </plugin>
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.3</version>
-          <configuration>
-            <goals>deploy</goals>
-          </configuration>
-      </plugin>      
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <goals>deploy</goals>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -145,5 +145,5 @@
     <url>https://github.com/${git.project.id}/${git.repo.name}</url>
     <tag>HEAD</tag>
   </scm>
-  
+
 </project>
