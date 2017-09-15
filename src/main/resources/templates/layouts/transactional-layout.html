@@ -13,11 +13,11 @@
     <!-- Additional analytics, if required. -->
     <!--/*/ <th:block th:replace="analytics/analytics-header"></th:block> /*/-->    
     <!-- Load closure template scripts -->
-    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/soyutils.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/v4_0_24/cdts/compiled/soyutils.js'"></script>
-    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/v4_0_24/cdts/compiled/wet-' + #{lang} + '.js'"></script>
+    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/soyutils.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.javascript} + '/cdts/compiled/soyutils.js'"></script>
+    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.javascript} + '/cdts/compiled/wet-' + #{lang} + '.js'"></script>
      <noscript>
       <!-- Write closure fall-back static file -->
-      <div data-th-replace="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/refTop'"></div>
+      <div data-th-replace="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/refTop'"></div>
     </noscript>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
@@ -43,7 +43,7 @@
     <!--/*/ <th:block  data-th-if="${cdn.session.timeout.enabled}" data-th-utext="${wetSessionTimeout}"></th:block> /*/-->
     <div id="def-top">
       <!-- Write closure fall-back static file -->
-      <div data-th-replace="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/transactTop-' + #{lang}"></div>
+      <div data-th-replace="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/transactTop-' + #{lang}"></div>
       <!-- Google Tag Manager DO NOT REMOVE OR MODIFY - NE PAS SUPPRIMER OU MODIFIER -->
       <noscript><iframe title="Google Tag Manager" src="//www.googletagmanager.com/ns.html?id=GTM-TLGQ9K" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <!-- End Google Tag Manager -->
@@ -66,7 +66,7 @@
       <!-- end main content -->
       <div id="def-preFooter">
         <!-- Write closure fall-back static file -->
-        <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/preFooter-' + #{lang}"></div>
+        <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/preFooter-' + #{lang}"></div>
       </div>
       <!-- Write closure template -->
       <script data-th-inline="javascript">
@@ -84,7 +84,7 @@
     </main>    
     <div id="def-footer">
       <!-- Write closure fall-back static file -->
-      <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version} + '/footer-' + #{lang}"></div>
+      <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/footer-' + #{lang}"></div>
     </div>
     <!-- Write closure template -->
     <script data-th-inline="javascript">

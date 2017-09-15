@@ -4,12 +4,15 @@
 package ca.canada.ised.wet.cdts.components.wet.config.beans;
 
 /**
- * @author pitta
+ * WET properties.
  *
+ * @author Andrew Pitt
+ * @since 4.0.25
  */
 public class WETTemplate {
 
-    private String version;
+    /** Wet version. */
+    private WETVersion version;
 
     private String theme;
 
@@ -22,14 +25,14 @@ public class WETTemplate {
     /**
      * @return the version
      */
-    public String getVersion() {
+    public WETVersion getVersion() {
         return version;
     }
 
     /**
      * @param version the version to set
      */
-    public void setVersion(String version) {
+    public void setVersion(WETVersion version) {
         this.version = version;
     }
 
