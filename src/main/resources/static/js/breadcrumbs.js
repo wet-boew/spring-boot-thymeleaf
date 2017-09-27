@@ -12,7 +12,7 @@ var ELLIPSES = "...";
 var ELLIPSES_DATA_STRING = "ellipsesData";
 var WB_BC_ID = "#wb-bc";
 
-jQuery(document).on("wb-ready.wb resize", function(event) {
+jQuery(document).on('wb-ready.wb', 'resize', function(event) {
   var list  = $(".breadcrumb").children();
   var size  = list.size();
  
