@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--[if lt IE 9]><html class="no-js lt-ie9" dir="ltr"><![endif]-->
+<!--[if gt IE 8]><!-->
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" data-th-lang="#{lang}" dir="ltr">
+<!--<![endif]-->
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
+         wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
+    <title>Temporary title</title>
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <!-- Additional analytics, if required. -->
+    <!--/*/ <th:block th:replace="analytics/analytics-header"></th:block> /*/-->
+    <!-- Load closure template scripts -->
+    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_26/cdts/compiled/soyutils.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.javascript} + '/cdts/compiled/soyutils.js'"></script>
+    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_26/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.javascript} + '/cdts/compiled/wet-' + #{lang} + '.js'"></script>
+    <noscript>
+      <!-- Write closure fall-back static file -->
+      <div data-th-replace="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/refTop'"></div>
+    </noscript>
+    <!-- Write closure template -->
+    <script data-th-inline="javascript">
+      /*<![CDATA[*/
+      document.write(wet.builder.refTop({
+          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+          jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false,
+          isApplication: true
+      }));
+      /*]]>*/
+    </script>
+    <!-- Write custom CSS elements here. Added through 'cssIncludes' model attribute. -->
+    <!--/*/ <th:block th:each="cssInclude : ${cssIncludes}"> /*/-->
+    <link rel="stylesheet" type="text/css" data-th-href="@{__${cssInclude}__}" />
+    <!--/*/ </th:block> /*/-->       
+    <!-- Write external CSS elements here. Added through 'externalCssIncludes' model attribute. -->
+    <!--/*/ <th:block th:each="externalCssInculde : ${externalCssIncludes}"> /*/-->
+    <link rel="stylesheet" type="text/css" data-th-href="@{__${externalCssInculde}__}" />
+    <!--/*/ </th:block> /*/-->      
+  </head>
+  <body vocab="http://schema.org/" typeof="WebPage">
+    <!-- Insert session timeout here. -->
+    <!--/*/ <th:block  data-th-if="${cdn.session.timeout.enabled}" data-th-utext="${wetSessionTimeout}"></th:block> /*/-->
+    <div id="def-top">
+      <!-- Write closure fall-back static file -->
+      <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/top-' + #{lang}"></div>
+    </div>    
+    <!-- Write closure template -->
+    <script data-th-inline="javascript">
+      /*<![CDATA[*/
+      var defTop = document.getElementById("def-top");
+      defTop.outerHTML = wet.builder.appTop({
+          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+          appName: [{text: /*[[#{application.title}]]*/ "Application name", href: /*[[@{/}]]*/ "#"}],
+          lngLinks: [{
+              lang: /*[[#{lang.other}]]*/ "fre",
+              href: /*[[${langUrl}]]*/ "/",
+              text: /*[[#{language.other}]]*/ "Français"
+          }]
+          // menuPath: "https://ssl-templates.services.gc.ca/app/cls/WET/gcweb/v4_0_26/cdts/ajax/appmenu-en.html",
+          // appSettings: [{href: "#"}],
+          //breadcrumbs: /*[[${breadcrumbs}]]*/ [{'acronym':'CDN','href':'http://www.canada.ca/en/index.html','title':'Home'}]
+      });
+      /*]]>*/
+    </script>
+    <main role="main" property="mainContentOfPage" class="container">
+      <!-- the main content -->
+      <div layout:fragment="content">Main content goes here.</div>
+      <!-- end main content -->
+      <div id="def-preFooter">
+        <!-- Write closure fall-back static file -->
+        <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/preFooter-' + #{lang}"></div>
+      </div>
+      <!-- Write closure template -->
+      <script data-th-inline="javascript">
+        /*<![CDATA[*/
+        var defPreFooter = document.getElementById("def-preFooter");
+        defPreFooter.outerHTML = wet.builder.preFooter({
+            cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+            dateModified: /*[[#{project.build.date}]]*/ "2017-01-01"
+        });
+        /*]]>*/
+      </script>
+    </main>    
+    <div id="def-footer">
+      <!-- Write closure fall-back static file -->
+      <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/footer-' + #{lang}"></div>
+    </div>        
+    <!-- Write closure template -->
+    <script data-th-inline="javascript">
+      /*<![CDATA[*/
+      var defFooter = document.getElementById("def-footer");
+      defFooter.outerHTML = wet.builder.appFooter({
+          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+          showFeatures: false
+      });
+      /*]]>*/
+    </script>
+    <!-- Write closure template -->
+    <script data-th-inline="javascript">
+      /*<![CDATA[*/
+      document.write(wet.builder.refFooter({
+          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
+          jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false,
+          isApplication: true
+      }));
+      /*]]>*/
+    </script>         
+    <!-- Additional JavaScript includes.  Added through jsLibraryIncludes model attribute. -->
+    <!--/*/ <th:block th:each="jsLibraryInclude : ${jsLibraryIncludes}"> /*/-->
+    <script type="text/javascript" data-th-src="@{__${jsLibraryInclude}__}"></script>
+    <!--/*/ </th:block> /*/-->    
+    
+    <!-- Additional JavaScript includes.  Added through jsIncludes model attribute. -->
+    <!--/*/ <th:block th:each="jsInclude : ${jsIncludes}"> /*/-->
+    <script type="text/javascript" data-th-src="@{__${jsInclude}__}"></script>
+    <!--/*/ </th:block> /*/-->
+    
+    <script type="text/javascript" data-th-src="@{/js/breadcrumbs.js}" ></script>
+    
+    <!-- Additional analytics, if required. -->
+    <!--/*/ <th:block th:replace="analytics/analytics-footer"></th:block> /*/-->    
+  </body>
+</html>
