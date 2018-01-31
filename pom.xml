@@ -13,7 +13,7 @@
 
   <!-- Version matches the WET version supported by CDTS. -->
 
-  <version>4.0.26.1</version>
+  <version>4.0.26.2-SNAPSHOT</version>
 
   <name>WET CDTS Spring Boot Thymeleaf Starter</name>
   <packaging>jar</packaging>
@@ -155,7 +155,7 @@
     <connection>${git.scm.prefix}https://github.com/${git.project.id}/${git.repo.name}.git</connection>
     <developerConnection>${git.scm.prefix}https://github.com/${git.project.id}/${git.repo.name}.git</developerConnection>
     <url>https://github.com/${git.project.id}/${git.repo.name}</url>
-    <tag>wet-cdts-spring-boot-thymeleaf-starter-4.0.26.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
 </project>
