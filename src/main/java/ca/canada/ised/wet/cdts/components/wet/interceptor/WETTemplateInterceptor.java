@@ -19,7 +19,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -33,356 +32,336 @@ import ca.canada.ised.wet.cdts.components.wet.footer.ContactInformation;
 import ca.canada.ised.wet.cdts.components.wet.sidemenu.SideMenuConfig;
 
 /**
- * The Class WETTemplateInterceptor populates the Spring Thymeleaf WET Template
- * with properties from the cdn.properties file or any page level overrides.
+ * The Class WETTemplateInterceptor populates the Spring Thymeleaf WET Template with properties from the cdn.properties
+ * file or any page level overrides.
  *
  * @author Frank Giusto
  */
 @Component
 public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
 
-	/** Logging instance. */
-	private static final Logger LOG = LoggerFactory.getLogger(WETTemplateInterceptor.class);
+    /** Logging instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(WETTemplateInterceptor.class);
 
-	/** The default cdn settings. */
-	@Autowired
-	private WETSettings defaultCdnSettings;
+    /** The default cdn settings. */
+    @Autowired
+    private WETSettings defaultCdnSettings;
 
-	/** The side menu config. */
-	@Autowired
-	private SideMenuConfig sideMenuConfig;
+    /** The side menu config. */
+    @Autowired
+    private SideMenuConfig sideMenuConfig;
 
-	/** The locale resolver. */
-	@Autowired
-	private LocaleResolver localeResolver;
+    /**
+     * The show exit transaction link. This can be turned off in your application.properties
+     */
+    @Value("${show.wet.exit.transaction:true}")
+    private Boolean showExitTransaction;
 
-	/**
-	 * The show exit transaction link. This can be turned off in your
-	 * application.properties
-	 */
-	@Value("${show.wet.exit.transaction:true}")
-	private Boolean showExitTransaction;
+    /**
+     * If you want to disable these breadcrumbs and use your own, set the property
+     * <code>cdts.include.breadcrumbs=false</code> in <code>application.properties</code>.
+     */
+    @Value("${cdts.include.breadcrumbs:true}")
+    private Boolean includeBreadCrumbs;
 
-	/** Message source. */
-	@Autowired
-	@Qualifier("messageSource")
-	private MessageSource applicationMessageSource;
+    /** Message source. */
+    @Autowired
+    @Qualifier("messageSource")
+    private MessageSource applicationMessageSource;
 
-	/** The breadcrumbs service. */
-	@Autowired
-	private BreadcrumbService breadcrumbsService;
+    /** The breadcrumbs service. */
+    @Autowired
+    private BreadcrumbService breadcrumbsService;
 
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception {
-		return true;
-	}
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+        throws Exception {
+        return true;
+    }
 
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) {
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                           ModelAndView modelAndView) {
 
-		if (null != modelAndView && StringUtils.isNotBlank(modelAndView.getViewName())) {
+        if (null != modelAndView && StringUtils.isNotBlank(modelAndView.getViewName())) {
 
-			LOG.debug("---Post Method Execution---postHandle() " + request.getServletPath() + ", "
-					+ modelAndView.getViewName());
+            LOG.debug("---Post Method Execution---postHandle() " + request.getServletPath() + ", "
+                + modelAndView.getViewName());
 
-			// Set any session timeout properties
-			setSessionTimeoutProperties(defaultCdnSettings, modelAndView);
+            // Set any session timeout properties
+            setSessionTimeoutProperties(defaultCdnSettings, modelAndView);
 
-			// Set the Locale Toggle
-			setLanguageRequestUrl(modelAndView, request);
+            // Set the Locale Toggle
+            setLanguageRequestUrl(modelAndView, request);
 
-			// Set Side Menu
-			setSideMenu(modelAndView);
+            // Set Side Menu
+            setSideMenu(modelAndView);
 
-			// Breadcrumbs
-			setBreadCrumbs(modelAndView, request);
+            // Breadcrumbs
+            if (includeBreadCrumbs) {
+                setBreadCrumbs(modelAndView, request);
+            }
 
-			// Leaving Secure Site
-			getLeavingSecureSiteWarning(defaultCdnSettings, modelAndView);
+            // Leaving Secure Site
+            getLeavingSecureSiteWarning(defaultCdnSettings, modelAndView);
 
-			// Set Exit Transaction
-			setExitTransaction(defaultCdnSettings, modelAndView, request);
+            // Set Exit Transaction
+            setExitTransaction(defaultCdnSettings, modelAndView, request);
 
-			// Set Footer Links
-			setFooterLinks(defaultCdnSettings, modelAndView, request);
+            // Set Footer Links
+            setFooterLinks(defaultCdnSettings, modelAndView, request);
 
-			// Put CDN object in model view.
-			modelAndView.addObject(WETModelKey.CDN.wetAttributeName(), defaultCdnSettings);
-		}
-	}
+            // Put CDN object in model view.
+            modelAndView.addObject(WETModelKey.CDN.wetAttributeName(), defaultCdnSettings);
+        }
+    }
 
-	/**
-	 * Sets the footer links if the user wishes to override the WET4 defaults.
-	 *
-	 * @param cdnSettings
-	 *            the cdn settings
-	 * @param modelAndView
-	 *            the model and view
-	 * @param request
-	 *            the request
-	 */
-	private void setFooterLinks(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
-		setContactInformation(cdnSettings, modelAndView, request);
+    /**
+     * Sets the footer links if the user wishes to override the WET4 defaults.
+     *
+     * @param cdnSettings the cdn settings
+     * @param modelAndView the model and view
+     * @param request the request
+     */
+    private void setFooterLinks(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
+        setContactInformation(cdnSettings, modelAndView, request);
 
-		String privacyUrl = cdnSettings.getPrivacy().getUrl();
-		String termsUrl = cdnSettings.getTerms().getUrl();
+        String privacyUrl = cdnSettings.getPrivacy().getUrl();
+        String termsUrl = cdnSettings.getTerms().getUrl();
 
-		if (StringUtils.isNotBlank(privacyUrl)) {
-			modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(), privacyUrl);
-		}
-		if (StringUtils.isNotBlank(termsUrl)) {
-			modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(), termsUrl);
-		}
+        if (StringUtils.isNotBlank(privacyUrl)) {
+            modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(), privacyUrl);
+        }
+        if (StringUtils.isNotBlank(termsUrl)) {
+            modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(), termsUrl);
+        }
 
-	}
+    }
 
-	/**
-	 * Sets the contact information if the user wishes to override the WET4
-	 * defaults.
-	 *
-	 * @param cdnSettings
-	 *            the cdn settings
-	 * @param modelAndView
-	 *            the model and view
-	 * @param request
-	 *            the request
-	 */
-	private void setContactInformation(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
-		String contactHref = cdnSettings.getContact().getUrl();
-		if (StringUtils.isNotBlank(contactHref)) {
-			List<ContactInformation> contactInformationList = new ArrayList<>();
-			ContactInformation contactInformation = new ContactInformation();
+    /**
+     * Sets the contact information if the user wishes to override the WET4 defaults.
+     *
+     * @param cdnSettings the cdn settings
+     * @param modelAndView the model and view
+     * @param request the request
+     */
+    private void setContactInformation(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
+        String contactHref = cdnSettings.getContact().getUrl();
+        if (StringUtils.isNotBlank(contactHref)) {
+            List<ContactInformation> contactInformationList = new ArrayList<>();
+            ContactInformation contactInformation = new ContactInformation();
 
-			contactInformation.setHref(contactHref);
-			contactInformation.setText(applicationMessageSource.getMessage("cdn.contact.link.text", null,
-					LocaleContextHolder.getLocale()));
+            contactInformation.setHref(contactHref);
+            contactInformation.setText(
+                applicationMessageSource.getMessage("cdn.contact.link.text", null, LocaleContextHolder.getLocale()));
 
-			contactInformationList.add(contactInformation);
-			modelAndView.addObject(WETModelKey.CONTACT_LINK.wetAttributeName(), contactInformationList);
-		}
-	}
+            contactInformationList.add(contactInformation);
+            modelAndView.addObject(WETModelKey.CONTACT_LINK.wetAttributeName(), contactInformationList);
+        }
+    }
 
-	/**
-	 * Sets the exit transaction.
-	 *
-	 * @param cdnSettings
-	 *            the cdn settings
-	 * @param modelAndView
-	 *            the model and view
-	 * @param request
-	 *            the request
-	 */
-	private void setExitTransaction(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
-		// TODO It would be nice to do this only for pages using Transaction
-		// layouts.
-		if (showExitTransaction) {
-			List<ExitTransaction> exitTransactionList = new ArrayList<>();
-			ExitTransaction exitTransaction = new ExitTransaction();
-			exitTransaction.setHref(request.getContextPath() + cdnSettings.getExit().getUrl());
-			exitTransaction.setTitle(applicationMessageSource.getMessage("cdn.exit.transaction.link.label", null,
-					LocaleContextHolder.getLocale()));
+    /**
+     * Sets the exit transaction.
+     *
+     * @param cdnSettings the cdn settings
+     * @param modelAndView the model and view
+     * @param request the request
+     */
+    private void setExitTransaction(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
+        // TODO It would be nice to do this only for pages using Transaction
+        // layouts.
+        if (showExitTransaction) {
+            List<ExitTransaction> exitTransactionList = new ArrayList<>();
+            ExitTransaction exitTransaction = new ExitTransaction();
+            exitTransaction.setHref(request.getContextPath() + cdnSettings.getExit().getUrl());
+            exitTransaction.setTitle(applicationMessageSource.getMessage("cdn.exit.transaction.link.label", null,
+                LocaleContextHolder.getLocale()));
 
-			exitTransactionList.add(exitTransaction);
-			modelAndView.addObject(WETModelKey.EXIT_TRANSACTION.wetAttributeName(), exitTransactionList);
-		} else {
-			modelAndView.addObject(WETModelKey.EXIT_TRANSACTION.wetAttributeName(), "");
-		}
-	}
+            exitTransactionList.add(exitTransaction);
+            modelAndView.addObject(WETModelKey.EXIT_TRANSACTION.wetAttributeName(), exitTransactionList);
+        } else {
+            modelAndView.addObject(WETModelKey.EXIT_TRANSACTION.wetAttributeName(), "");
+        }
+    }
 
-	/**
-	 * Sets the bread crumbs for the requested view.
-	 *
-	 * @param modelAndView
-	 *            the model and view
-	 * @param request
-	 *            the request
-	 */
-	private void setBreadCrumbs(ModelAndView modelAndView, HttpServletRequest request) {
+    /**
+     * Sets the bread crumbs for the requested view.
+     *
+     * @param modelAndView the model and view
+     * @param request the request
+     */
+    private void setBreadCrumbs(ModelAndView modelAndView, HttpServletRequest request) {
 
-		// Get view breadCrumbs
-		StringBuilder viewParameters = new StringBuilder();
-		viewParameters.append(request.getRequestURI()).append(getRequestParameters(request).toString());
-		breadcrumbsService.buildBreadCrumbs(modelAndView.getViewName(), viewParameters.toString());
-		List<Object> viewBreadCrumbs = breadcrumbsService.getBreadCrumbList();
-		String breadCrumbsKey = WETModelKey.BREADCRUMBS.wetAttributeName();
+        // Get view breadCrumbs
+        StringBuilder viewParameters = new StringBuilder();
+        viewParameters.append(request.getRequestURI()).append(getRequestParameters(request).toString());
+        breadcrumbsService.buildBreadCrumbs(modelAndView.getViewName(), viewParameters.toString());
+        List<Object> viewBreadCrumbs = breadcrumbsService.getBreadCrumbList();
+        String breadCrumbsKey = WETModelKey.BREADCRUMBS.wetAttributeName();
 
-		ModelMap modelMap = modelAndView.getModelMap();
-		Object breadCrumbList = modelMap.get(breadCrumbsKey);
-		// if list is provided by the BreadCrumbs key in the ModelMap then add
-		// to the BreadCrumbs list
-		if (breadCrumbList != null && breadCrumbList instanceof BreadCrumbs) {
-			BreadCrumbs breadCrumbs = (BreadCrumbs) breadCrumbList;
-			// list should not be null but check for null anyway
-			if (breadCrumbs.getList() != null && !breadCrumbs.getList().isEmpty()) {
-				viewBreadCrumbs.addAll(breadCrumbs.getList());
-			}
-		}
-		modelAndView.addObject(breadCrumbsKey, viewBreadCrumbs);
-	}
+        ModelMap modelMap = modelAndView.getModelMap();
+        Object breadCrumbList = modelMap.get(breadCrumbsKey);
+        // if list is provided by the BreadCrumbs key in the ModelMap then add
+        // to the BreadCrumbs list
+        if (breadCrumbList != null && breadCrumbList instanceof BreadCrumbs) {
+            BreadCrumbs breadCrumbs = (BreadCrumbs) breadCrumbList;
+            // list should not be null but check for null anyway
+            if (breadCrumbs.getList() != null && !breadCrumbs.getList().isEmpty()) {
+                viewBreadCrumbs.addAll(breadCrumbs.getList());
+            }
+        }
+        modelAndView.addObject(breadCrumbsKey, viewBreadCrumbs);
+    }
 
-	/**
-	 * Sets the side menu.
-	 *
-	 * @param modelAndView
-	 *            the new side menu
-	 */
-	private void setSideMenu(ModelAndView modelAndView) {
-		// Side Menu
-		if (modelAndView.getModelMap().containsAttribute(WETModelKey.PAGE_SECTION_MENU.wetAttributeName())) {
-			modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(),
-					modelAndView.getModelMap().get(WETModelKey.PAGE_SECTION_MENU.wetAttributeName()));
-		} else {
-			modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(), sideMenuConfig.getSectionMenuList());
-		}
-	}
+    /**
+     * Sets the side menu.
+     *
+     * @param modelAndView the new side menu
+     */
+    private void setSideMenu(ModelAndView modelAndView) {
+        // Side Menu
+        if (modelAndView.getModelMap().containsAttribute(WETModelKey.PAGE_SECTION_MENU.wetAttributeName())) {
+            modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(),
+                modelAndView.getModelMap().get(WETModelKey.PAGE_SECTION_MENU.wetAttributeName()));
+        } else {
+            modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(), sideMenuConfig.getSectionMenuList());
+        }
+    }
 
-	/**
-	 * Sets the language request url.
-	 *
-	 * @param modelAndView
-	 *            the model and view
-	 * @param request
-	 *            the request
-	 */
-	private void setLanguageRequestUrl(ModelAndView modelAndView, HttpServletRequest request) {
+    /**
+     * Sets the language request url.
+     *
+     * @param modelAndView the model and view
+     * @param request the request
+     */
+    private void setLanguageRequestUrl(ModelAndView modelAndView, HttpServletRequest request) {
 
-		StringBuilder requestParameters = getRequestParameters(request);
+        StringBuilder requestParameters = getRequestParameters(request);
 
-		setLanguageToggle(request, requestParameters);
+        setLanguageToggle(request, requestParameters);
 
-		modelAndView.addObject(WETModelKey.LANGUAGE_URL.wetAttributeName(), requestParameters.toString());
-	}
+        modelAndView.addObject(WETModelKey.LANGUAGE_URL.wetAttributeName(), requestParameters.toString());
+    }
 
-	/**
-	 * Gets the request parameters.
-	 *
-	 * @param request
-	 *            the request
-	 * @return the request parameters
-	 */
-	private StringBuilder getRequestParameters(HttpServletRequest request) {
-		StringBuilder requestParameters = new StringBuilder();
+    /**
+     * Gets the request parameters.
+     *
+     * @param request the request
+     * @return the request parameters
+     */
+    private StringBuilder getRequestParameters(HttpServletRequest request) {
+        StringBuilder requestParameters = new StringBuilder();
 
-		Map<String, String[]> requestParams = request.getParameterMap();
-		Set<Entry<String, String[]>> entrySet = requestParams.entrySet();
+        Map<String, String[]> requestParams = request.getParameterMap();
+        Set<Entry<String, String[]>> entrySet = requestParams.entrySet();
 
-		int element = 0;
-		for (Entry<String, String[]> entry : entrySet) {
-			String key = entry.getKey(); // parameter name
-			String[] value = entry.getValue(); // parameter value
-			for (String val : value) {
-				if (!"lang".equals(key) && !WETModelKey.LANGUAGE_URL.wetAttributeName().equals(key)) {
-					getParameterIdentifier(element == 0, requestParameters);
-					requestParameters.append(key).append("=").append(val);
-					element++;
-				}
-			}
-		}
-		return requestParameters;
-	}
+        int element = 0;
+        for (Entry<String, String[]> entry : entrySet) {
+            String key = entry.getKey(); // parameter name
+            String[] value = entry.getValue(); // parameter value
+            for (String val : value) {
+                if (!"lang".equals(key) && !WETModelKey.LANGUAGE_URL.wetAttributeName().equals(key)) {
+                    getParameterIdentifier(element == 0, requestParameters);
+                    requestParameters.append(key).append("=").append(val);
+                    element++;
+                }
+            }
+        }
+        return requestParameters;
+    }
 
-	/**
-	 * Gets the parameter identifier.
-	 *
-	 * @param firstParameter
-	 *            the first parameter
-	 * @param requestParameters
-	 *            the request parameters
-	 * @return the parameter identifier
-	 */
-	private void getParameterIdentifier(boolean firstParameter, StringBuilder requestParameters) {
-		if (firstParameter) {
-			requestParameters.append("?");
-		} else {
-			requestParameters.append("&");
-		}
-	}
+    /**
+     * Gets the parameter identifier.
+     *
+     * @param firstParameter the first parameter
+     * @param requestParameters the request parameters
+     * @return the parameter identifier
+     */
+    private void getParameterIdentifier(boolean firstParameter, StringBuilder requestParameters) {
+        if (firstParameter) {
+            requestParameters.append("?");
+        } else {
+            requestParameters.append("&");
+        }
+    }
 
-	/**
-	 * Sets the language toggle.
-	 *
-	 * @param request
-	 *            the request
-	 * @param langUrl
-	 *            the lang url
-	 */
-	private void setLanguageToggle(HttpServletRequest request, StringBuilder langUrl) {
-		if (langUrl.length() > 0) {
-			langUrl.append("&");
-		} else {
-			langUrl.append("?");
-		}
-		langUrl.append("lang=");
-		langUrl.append(applicationMessageSource.getMessage("locale.other", null, LocaleContextHolder.getLocale()));
-	}
+    /**
+     * Sets the language toggle.
+     *
+     * @param request the request
+     * @param langUrl the lang url
+     */
+    private void setLanguageToggle(HttpServletRequest request, StringBuilder langUrl) {
+        if (langUrl.length() > 0) {
+            langUrl.append("&");
+        } else {
+            langUrl.append("?");
+        }
+        langUrl.append("lang=");
+        langUrl.append(applicationMessageSource.getMessage("locale.other", null, LocaleContextHolder.getLocale()));
+    }
 
-	/**
-	 * Sets the session timeout properties in the layout if provided.
-	 *
-	 * @param cdnSettings
-	 *            the cdn settings
-	 * @param modelAndView
-	 *            the model and view
-	 */
-	private void setSessionTimeoutProperties(WETSettings cdnSettings, ModelAndView modelAndView) {
-		if (cdnSettings.getSession().getTimeout().getEnabled()) {
-			// Build data-wb-sessto
-			StringBuilder dataWbSessionTo = new StringBuilder();
-			dataWbSessionTo.append("<span class=\"wb-sessto\" data-wb-sessto='{");
-			dataWbSessionTo.append("\"inactivity\": ").append(cdnSettings.getSession().getInactivity().getValue());
-			dataWbSessionTo.append(",").append("\"reactionTime\": ")
-					.append(cdnSettings.getSession().getReactiontime().getValue());
-			dataWbSessionTo.append(",").append("\"sessionalive\":")
-					.append(cdnSettings.getSession().getSessionalive().getValue());
-			if (StringUtils.isNotBlank(cdnSettings.getSession().getRefreshcallbackurl())) {
-				dataWbSessionTo.append(",").append("\"refreshCallbackUrl\": ").append("\"")
-						.append(cdnSettings.getSession().getRefreshcallbackurl()).append("\"");
-			}
-			if (null != cdnSettings.getSession().getRefreshonclick()) {
-				dataWbSessionTo.append(",").append("\"refreshOnClick\": ")
-						.append(cdnSettings.getSession().getRefreshonclick());
-			}
-			if (null != cdnSettings.getSession().getRefreshlimit().getValue()) {
-				dataWbSessionTo.append(",").append("\"refreshLimit\": ")
-						.append(cdnSettings.getSession().getRefreshlimit().getValue());
-			}
-			if (StringUtils.isNotBlank(cdnSettings.getSession().getMethod())) {
-				dataWbSessionTo.append(",").append("\"method\":").append("\"")
-						.append(cdnSettings.getSession().getMethod()).append("\"");
-			}
-			if (StringUtils.isNotBlank(cdnSettings.getSession().getAdditionaldata())) {
-				dataWbSessionTo.append(",").append("\"additionalData\":").append("\"")
-						.append(cdnSettings.getSession().getAdditionaldata()).append("\"");
-			}
-			dataWbSessionTo.append(",").append("\"logouturl\":").append("\"")
-					.append(cdnSettings.getSession().getLogouturl()).append("\"");
-			dataWbSessionTo.append("}'></span>");
-			modelAndView.addObject(WETModelKey.SESSION_TIMEOUT.wetAttributeName(), dataWbSessionTo.toString());
-		}
-	}
+    /**
+     * Sets the session timeout properties in the layout if provided.
+     *
+     * @param cdnSettings the cdn settings
+     * @param modelAndView the model and view
+     */
+    private void setSessionTimeoutProperties(WETSettings cdnSettings, ModelAndView modelAndView) {
+        if (cdnSettings.getSession().getTimeout().getEnabled()) {
+            // Build data-wb-sessto
+            StringBuilder dataWbSessionTo = new StringBuilder();
+            dataWbSessionTo.append("<span class=\"wb-sessto\" data-wb-sessto='{");
+            dataWbSessionTo.append("\"inactivity\": ").append(cdnSettings.getSession().getInactivity().getValue());
+            dataWbSessionTo.append(",").append("\"reactionTime\": ")
+                .append(cdnSettings.getSession().getReactiontime().getValue());
+            dataWbSessionTo.append(",").append("\"sessionalive\":")
+                .append(cdnSettings.getSession().getSessionalive().getValue());
+            if (StringUtils.isNotBlank(cdnSettings.getSession().getRefreshcallbackurl())) {
+                dataWbSessionTo.append(",").append("\"refreshCallbackUrl\": ").append("\"")
+                    .append(cdnSettings.getSession().getRefreshcallbackurl()).append("\"");
+            }
+            if (null != cdnSettings.getSession().getRefreshonclick()) {
+                dataWbSessionTo.append(",").append("\"refreshOnClick\": ")
+                    .append(cdnSettings.getSession().getRefreshonclick());
+            }
+            if (null != cdnSettings.getSession().getRefreshlimit().getValue()) {
+                dataWbSessionTo.append(",").append("\"refreshLimit\": ")
+                    .append(cdnSettings.getSession().getRefreshlimit().getValue());
+            }
+            if (StringUtils.isNotBlank(cdnSettings.getSession().getMethod())) {
+                dataWbSessionTo.append(",").append("\"method\":").append("\"")
+                    .append(cdnSettings.getSession().getMethod()).append("\"");
+            }
+            if (StringUtils.isNotBlank(cdnSettings.getSession().getAdditionaldata())) {
+                dataWbSessionTo.append(",").append("\"additionalData\":").append("\"")
+                    .append(cdnSettings.getSession().getAdditionaldata()).append("\"");
+            }
+            dataWbSessionTo.append(",").append("\"logouturl\":").append("\"")
+                .append(cdnSettings.getSession().getLogouturl()).append("\"");
+            dataWbSessionTo.append("}'></span>");
+            modelAndView.addObject(WETModelKey.SESSION_TIMEOUT.wetAttributeName(), dataWbSessionTo.toString());
+        }
+    }
 
-	/**
-	 * Gets the leaving secure site warning.
-	 *
-	 * @param cdnSettings
-	 *            the cdn settings
-	 * @param modelAndView
-	 *            the model and view
-	 * @return the leaving secure site warning
-	 */
-	private void getLeavingSecureSiteWarning(WETSettings cdnSettings, ModelAndView modelAndView) {
+    /**
+     * Gets the leaving secure site warning.
+     *
+     * @param cdnSettings the cdn settings
+     * @param modelAndView the model and view
+     * @return the leaving secure site warning
+     */
+    private void getLeavingSecureSiteWarning(WETSettings cdnSettings, ModelAndView modelAndView) {
 
-		ExitScript exitScript = new ExitScript();
-		exitScript.setExitScriptEnabled(cdnSettings.getLeavingsecuresitewarning().getEnabled());
-		exitScript.setExitUrl(cdnSettings.getLeavingsecuresitewarning().getRedirecturl());
-		exitScript.setExitMessage((applicationMessageSource.getMessage("cdn.leavingsecuresitewarning.message", null,
-				LocaleContextHolder.getLocale())));
+        ExitScript exitScript = new ExitScript();
+        exitScript.setExitScriptEnabled(cdnSettings.getLeavingsecuresitewarning().getEnabled());
+        exitScript.setExitUrl(cdnSettings.getLeavingsecuresitewarning().getRedirecturl());
+        exitScript.setExitMessage((applicationMessageSource.getMessage("cdn.leavingsecuresitewarning.message", null,
+            LocaleContextHolder.getLocale())));
 
-		exitScript.setExitExcludedDomains(cdnSettings.getLeavingsecuresitewarning().getExcludeddomains());
+        exitScript.setExitExcludedDomains(cdnSettings.getLeavingsecuresitewarning().getExcludeddomains());
 
-		modelAndView.addObject(WETModelKey.LEAVING_SECURE_SITE.wetAttributeName(), exitScript);
-	}
+        modelAndView.addObject(WETModelKey.LEAVING_SECURE_SITE.wetAttributeName(), exitScript);
+    }
 
 }
