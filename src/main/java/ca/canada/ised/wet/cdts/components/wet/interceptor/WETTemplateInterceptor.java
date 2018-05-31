@@ -1,5 +1,8 @@
 package ca.canada.ised.wet.cdts.components.wet.interceptor;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -262,12 +265,25 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
             for (String val : value) {
                 if (!"lang".equals(key) && !WETModelKey.LANGUAGE_URL.wetAttributeName().equals(key)) {
                     getParameterIdentifier(element == 0, requestParameters);
-                    requestParameters.append(key).append("=").append(val);
+                    requestParameters
+                            .append(urlEncode(key))
+                            .append("=")
+                            .append(urlEncode(val));
                     element++;
                 }
             }
         }
         return requestParameters;
+    }
+
+    private String urlEncode(String text) {
+        try {
+            return URLEncoder.encode(text, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            //only log as it should never happen (standard charset).
+            LOG.error("Could not encode URL value: {}", text, e);
+            return "";
+        }
     }
 
     /**
