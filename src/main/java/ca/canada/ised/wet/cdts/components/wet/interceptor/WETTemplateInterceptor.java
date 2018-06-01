@@ -2,9 +2,6 @@ package ca.canada.ised.wet.cdts.components.wet.interceptor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +27,7 @@ import ca.canada.ised.wet.cdts.components.wet.exit.ExitScript;
 import ca.canada.ised.wet.cdts.components.wet.exit.ExitTransaction;
 import ca.canada.ised.wet.cdts.components.wet.footer.ContactInformation;
 import ca.canada.ised.wet.cdts.components.wet.sidemenu.SideMenuConfig;
+import ca.canada.ised.wet.cdts.components.wet.utils.URLUtils;
 
 /**
  * The Class WETTemplateInterceptor populates the Spring Thymeleaf WET Template with properties from the cdn.properties
@@ -193,9 +191,9 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     private void setBreadCrumbs(ModelAndView modelAndView, HttpServletRequest request) {
 
         // Get view breadCrumbs
-        StringBuilder viewParameters = new StringBuilder();
-        viewParameters.append(request.getRequestURI()).append(getRequestParameters(request).toString());
-        breadcrumbsService.buildBreadCrumbs(modelAndView.getViewName(), viewParameters.toString());
+        String url = request.getRequestURI()
+                + URLUtils.toLanguageNeutralQueryString(request.getParameterMap());
+        breadcrumbsService.buildBreadCrumbs(modelAndView.getViewName(), url);
         List<Object> viewBreadCrumbs = breadcrumbsService.getBreadCrumbList();
         String breadCrumbsKey = WETModelKey.BREADCRUMBS.wetAttributeName();
 
@@ -234,71 +232,16 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
      * @param modelAndView the model and view
      * @param request the request
      */
-    private void setLanguageRequestUrl(ModelAndView modelAndView, HttpServletRequest request) {
-
-        StringBuilder requestParameters = getRequestParameters(request);
-
-        setLanguageToggle(request, requestParameters);
-
-        modelAndView.addObject(WETModelKey.LANGUAGE_URL.wetAttributeName(), requestParameters.toString());
-    }
-
-    /**
-     * Gets the request parameters.
-     *
-     * @param request the request
-     * @return the request parameters
-     */
-    private StringBuilder getRequestParameters(HttpServletRequest request) {
-        StringBuilder requestParameters = new StringBuilder();
-
-        Map<String, String[]> requestParams = request.getParameterMap();
-        Set<Entry<String, String[]>> entrySet = requestParams.entrySet();
-
-        int element = 0;
-        for (Entry<String, String[]> entry : entrySet) {
-            String key = entry.getKey(); // parameter name
-            String[] value = entry.getValue(); // parameter value
-            for (String val : value) {
-                if (!"lang".equals(key) && !WETModelKey.LANGUAGE_URL.wetAttributeName().equals(key)) {
-                    getParameterIdentifier(element == 0, requestParameters);
-                    requestParameters.append(key).append("=").append(val);
-                    element++;
-                }
-            }
-        }
-        return requestParameters;
-    }
-
-    /**
-     * Gets the parameter identifier.
-     *
-     * @param firstParameter the first parameter
-     * @param requestParameters the request parameters
-     * @return the parameter identifier
-     */
-    private void getParameterIdentifier(boolean firstParameter, StringBuilder requestParameters) {
-        if (firstParameter) {
-            requestParameters.append("?");
-        } else {
-            requestParameters.append("&");
-        }
-    }
-
-    /**
-     * Sets the language toggle.
-     *
-     * @param request the request
-     * @param langUrl the lang url
-     */
-    private void setLanguageToggle(HttpServletRequest request, StringBuilder langUrl) {
-        if (langUrl.length() > 0) {
-            langUrl.append("&");
-        } else {
-            langUrl.append("?");
-        }
-        langUrl.append("lang=");
-        langUrl.append(applicationMessageSource.getMessage("locale.other", null, LocaleContextHolder.getLocale()));
+    private void setLanguageRequestUrl(
+            ModelAndView modelAndView, HttpServletRequest request) {
+        modelAndView.addObject(
+                WETModelKey.LANGUAGE_URL.wetAttributeName(),
+                URLUtils.toLanguageToggleQueryString(
+                    request.getParameterMap(),
+                    applicationMessageSource.getMessage(
+                            "locale.other",
+                            null,
+                            LocaleContextHolder.getLocale())));
     }
 
     /**
