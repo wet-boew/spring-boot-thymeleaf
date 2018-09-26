@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 /**
  * The Class SideMenuConfig is populated with the contents of sectionMenu.yml which contains the WET4 side menu text and
@@ -15,7 +16,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(locations = {"classpath:sectionMenu.yml"})
+@PropertySource("classpath:sectionMenu.yml")
+@ConfigurationProperties
 public class SideMenuConfig {
 
     /** The section menu list. */
@@ -33,7 +35,8 @@ public class SideMenuConfig {
     /**
      * Sets the section menu list.
      *
-     * @param sectionMenuList the new section menu list
+     * @param sectionMenuList
+     *            the new section menu list
      */
     public void setSectionMenuList(List<SectionMenu> sectionMenuList) {
         this.sectionMenuList = sectionMenuList;
