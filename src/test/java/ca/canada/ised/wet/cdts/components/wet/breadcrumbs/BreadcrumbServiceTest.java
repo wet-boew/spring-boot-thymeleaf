@@ -1,5 +1,8 @@
 package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -8,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.util.Assert;
 
 import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
 
@@ -49,11 +51,11 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
         breadcrumbsService.buildBreadCrumbs("greeting", "pageReq1");
         List<Object> bcList = breadcrumbsService.getBreadCrumbList();
 
-        Assert.isTrue(bcList.size() == 2);
+        assertEquals(2, bcList.size());
 
         BreadCrumbLink breadcrumb = (BreadCrumbLink) bcList.get(0);
-        Assert.isTrue("Home".equals(breadcrumb.getTitle()));
-        Assert.isTrue("http://www.canada.ca/en/index.html".equals(breadcrumb.getHref()));
+        assertEquals("Home", breadcrumb.getTitle());
+        assertEquals("http://www.canada.ca/en/index.html", breadcrumb.getHref());
 
     }
 
@@ -66,10 +68,10 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
         List<Object> bcList = breadcrumbsService.getBreadCrumbList();
 
         BreadCrumbLink breadcrumb = (BreadCrumbLink) bcList.get(0);
-        Assert.isTrue("Accueil".equals(breadcrumb.getTitle()));
-        Assert.isTrue("http://www.canada.ca/fr/index.html".equals(breadcrumb.getHref()));
+        assertEquals("Accueil", breadcrumb.getTitle());
+        assertEquals("http://www.canada.ca/fr/index.html", breadcrumb.getHref());
 
-        Assert.isTrue(bcList.size() == 3);
+        assertEquals(3, bcList.size());
     }
 
     @Test
@@ -82,7 +84,7 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
         breadcrumbsService.buildBreadCrumbs("page2", "pageReq2");
         List<Object> bcList = breadcrumbsService.getBreadCrumbList();
 
-        Assert.isTrue(bcList.size() == 3);
+        assertEquals(3, bcList.size());
     }
 
     @Test
@@ -117,10 +119,11 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
         String rootKey2 = breadcrumbMessageSource.getMessage(BreadcrumbResource.ROOT_KEY.value(), null,
             Locale.CANADA_FRENCH);
 
-        Assert.isTrue(null != rootKey && rootKey.equals(rootKey2));
+        assertNotNull(rootKey);
+        assertEquals(rootKey, rootKey2);
 
-        Assert.isTrue(null != breadcrumbMessageSource.getMessage(rootKey, null, Locale.CANADA));
-        Assert.isTrue(null != breadcrumbMessageSource.getMessage(rootKey2, null, Locale.CANADA_FRENCH));
+        assertNotNull(breadcrumbMessageSource.getMessage(rootKey, null, Locale.CANADA));
+        assertNotNull(breadcrumbMessageSource.getMessage(rootKey2, null, Locale.CANADA_FRENCH));
 
     }
 }
