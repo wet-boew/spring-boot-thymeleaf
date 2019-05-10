@@ -13,7 +13,7 @@
 
   <!-- Version matches the WET version supported by CDTS. -->
 
-  <version>4.0.26.3-SNAPSHOT</version>
+  <version>4.0.30.0-SNAPSHOT</version>
 
   <name>WET CDTS Spring Boot Thymeleaf Starter</name>
   <packaging>jar</packaging>
