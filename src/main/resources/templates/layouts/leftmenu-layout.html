@@ -24,7 +24,7 @@
       /*<![CDATA[*/
       document.write(wet.builder.refTop({
          cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
-         jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false
+         jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ "internal"
       }));
       /*]]>*/
     </script>
@@ -124,7 +124,7 @@
       /*<![CDATA[*/
       document.write(wet.builder.refFooter({
           cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
-          jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false,
+          jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ "internal",
           exitScript: /*[[${cdn.leavingsecuresitewarning.enabled}]]*/ false,
           exitURL: /*[[${cdn.leavingsecuresitewarning.redirecturl}]]*/ "#",
           exitMsg: "You are about to leave a secure site, do you wish to continue?",
