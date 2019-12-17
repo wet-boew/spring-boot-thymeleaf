@@ -67,7 +67,7 @@ public class WETTemplate {
     /**
      * @return the loadjqueryfromgoogle
      */
-    public Boolean getLoadjqueryfromgoogle() {
+    public String getLoadjqueryfromgoogle() {
         return loadjqueryfromgoogle;
     }
 
