@@ -24,7 +24,7 @@ Also, since the templates are based on Thymeleaf, they are plain HTML5 by defaul
     <dependency>
       <groupId>ca.canada.ised.wet.cdts</groupId>
       <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
-      <version>4.0.21.4</version>
+      <version>4.0.32.0</version>
     </dependency>
 ```
 
