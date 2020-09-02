@@ -14,7 +14,7 @@
 
   <!-- Version matches the WET version supported by CDTS. -->
 
-  <version>4.0.32.0</version>
+  <version>4.0.32.1-SNAPSHOT</version>
 
   <name>WET CDTS Spring Boot Thymeleaf Starter</name>
   <packaging>jar</packaging>
