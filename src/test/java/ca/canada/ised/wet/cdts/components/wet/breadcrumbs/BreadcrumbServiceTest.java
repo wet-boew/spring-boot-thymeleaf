@@ -1,17 +1,28 @@
 package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.junit.Assert;
+import javax.servlet.ServletContext;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
 
@@ -26,6 +37,13 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
 
     @Autowired
     private BreadcrumbService breadcrumbsService;
+
+    @Autowired
+    @Qualifier("messageSource")
+    private MessageSource applicationMessageSource;
+
+    @Autowired
+    private ServletContext servletContext;
 
     /** The breadcrumb message source. */
     private static WETResourceBundle breadcrumbMessageSource = getBreadCrumbBundle();
@@ -52,7 +70,7 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
         breadcrumbsService.buildBreadCrumbs("greeting", "pageReq1");
         List<Object> bcList = breadcrumbsService.getBreadCrumbList();
 
-        Assert.assertEquals(2, bcList.size());
+        assertEquals(2, bcList.size());
 
         BreadCrumbLink breadcrumb = (BreadCrumbLink) bcList.get(0);
         assertEquals("Home", breadcrumb.getTitle());
@@ -125,5 +143,62 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
         assertNotNull(breadcrumbMessageSource.getMessage(rootKey, null, Locale.CANADA));
         assertNotNull(breadcrumbMessageSource.getMessage(rootKey2, null, Locale.CANADA_FRENCH));
 
+    }
+
+    /**
+     * Used to find issue https://github.com/wet-boew/spring-boot-thymeleaf/issues/24
+     *
+     * Was tested with up to 100000 threads, but I've dropped it down to make the test suite faster
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void getBreadCrumbListWithConcurrency() throws InterruptedException {
+
+        // don't use the spring beans since we are messing around with threads
+        final BreadcrumbServiceImpl breadCrumb = new BreadcrumbServiceImpl();
+        ReflectionTestUtils.setField(breadCrumb, "showLandingPageBreadcrumb", Boolean.TRUE);
+        ReflectionTestUtils.setField(breadCrumb, "breadcrumbSession", new ThreadLocalBreadCrumbSession());
+        ReflectionTestUtils.setField(breadCrumb, "applicationMessageSource", applicationMessageSource);
+        ReflectionTestUtils.setField(breadCrumb, "servletContext", servletContext);
+
+        LocaleContextHolder.setLocale(Locale.CANADA);
+        int numberOfThreads = 1000;
+        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads / 10);
+        final CountDownLatch latch = new CountDownLatch(numberOfThreads);
+        final Random rand = new Random();
+        final List<Object> exceptions = new ArrayList<>();
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.execute(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(10 + rand.nextInt(50));
+
+                        int loopCount = 2 + rand.nextInt(10);
+                        breadCrumb.buildBreadCrumbs("greeting", "pageReq0");
+                        for (int j = 0; j < loopCount; j++) {
+                            breadCrumb.buildBreadCrumbs("page" + j, "pageReq" + j);
+                        }
+
+                        List<Object> bcList = breadCrumb.getBreadCrumbList();
+                        assertFalse(bcList.isEmpty());
+
+                    } catch (Exception | AssertionError e) {
+                        // have to add it back in this way because the exceptions won't fail the junit test since they
+                        // are in a different thread
+                        e.printStackTrace();
+                        exceptions.add(e);
+                    } finally {
+                        latch.countDown();
+                    }
+                }
+            });
+        }
+        latch.await();
+
+        assertTrue("should not be any exceptions from the threads but was " + exceptions, exceptions.isEmpty());
     }
 }

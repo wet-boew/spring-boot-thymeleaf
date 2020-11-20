@@ -229,7 +229,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
             idx++;
         }
 
-        breadcrumbSession = new BreadCrumbSession();
+        getBreadcrumbMap().clear();
         getBreadcrumbMap().putAll(ajustedBreadCrumbList);
     }
 
@@ -384,7 +384,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
      */
     private Map<String, BreadCrumb> createBreadCrumbList() {
 
-        breadcrumbSession = new BreadCrumbSession();
+        getBreadcrumbMap().clear();
 
         BreadCrumb breadCrumb = new BreadCrumb();
         breadCrumb.setTitleEN(applicationMessageSource.getMessage("home", null, Locale.CANADA));
@@ -482,7 +482,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
             ajustedBreadCrumbList.put(breadCrumb.getViewName(), breadCrumb);
         }
 
-        breadcrumbSession = new BreadCrumbSession();
+        getBreadcrumbMap().clear();
         getBreadcrumbMap().putAll(ajustedBreadCrumbList);
     }
 
