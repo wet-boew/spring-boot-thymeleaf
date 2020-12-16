@@ -300,4 +300,23 @@ public class WETTemplateInterceptor implements AsyncHandlerInterceptor {
         modelAndView.addObject(WETModelKey.LEAVING_SECURE_SITE.wetAttributeName(), exitScript);
     }
 
+    // the following were copied out of HandlerInterceptorAdapter from when this code used to extend this class. Once
+    // this code base moves to spring boot 2.4.x then we can delete these methods
+
+    /**
+     * This implementation is empty.
+     */
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+        throws Exception {
+    }
+
+    /**
+     * This implementation is empty.
+     */
+    @Override
+    public void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler)
+        throws Exception {
+    }
+
 }
