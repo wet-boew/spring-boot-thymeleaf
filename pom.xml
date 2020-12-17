@@ -113,9 +113,10 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
+    <!-- until all tests converted to junit 5, we need to have this in so maven plugin picks up teh tests -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
