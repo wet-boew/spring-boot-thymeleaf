@@ -5,6 +5,8 @@ package ca.canada.ised.wet.cdts.components.wet.sidemenu;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import ca.canada.ised.wet.cdts.components.wet.utils.Language;
 
 /**
@@ -42,6 +44,11 @@ public class MenuLink implements Serializable {
         } else {
             return textFr;
         }
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
     /**
