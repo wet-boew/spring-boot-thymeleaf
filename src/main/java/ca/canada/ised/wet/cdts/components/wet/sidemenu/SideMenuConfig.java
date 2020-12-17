@@ -58,8 +58,7 @@ public class SideMenuConfig {
     /**
      * Sets the section menu list.
      *
-     * @param sectionMenuList
-     *            the new section menu list
+     * @param sectionMenuList the new section menu list
      */
     public void setSectionMenuList(List<SectionMenu> sectionMenuList) {
         this.sectionMenuList = sectionMenuList;
