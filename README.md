@@ -24,7 +24,7 @@ Also, since the templates are based on Thymeleaf, they are plain HTML5 by defaul
     <dependency>
       <groupId>ca.canada.ised.wet.cdts</groupId>
       <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
-      <version>4.0.21.4</version>
+      <version>4.0.32.0</version>
     </dependency>
 ```
 
@@ -73,3 +73,13 @@ Also, since the templates are based on Thymeleaf, they are plain HTML5 by defaul
       </body>
     </html>
 ```
+
+## Manually Releasing
+Currently the build infa does not allow direct contact to github, so releases will have to be done manually.
+For tagging in eclipse, see https://wiki.eclipse.org/EGit/User_Guide#Tagging
+1. Update the pom file manually to a released version, committing with message "creating a release of 4.0.32.X" 
+2. Ensure that the the project is built correctly
+3. In eclipse, open the history view of the pom file
+4. Click "Create Tag" on the commit
+5. Enter tag name of "wet-cdts-spring-boot-thymeleaf-starter-4.0.32.X" with message "Releasing 4.0.32.X"
+6. Push to upstream

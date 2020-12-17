@@ -18,7 +18,7 @@ public class WETTemplate {
 
     private String subtheme;
 
-    private Boolean loadjqueryfromgoogle;
+    private String loadjqueryfromgoogle;
 
     private Boolean usehttps;
 
@@ -67,14 +67,14 @@ public class WETTemplate {
     /**
      * @return the loadjqueryfromgoogle
      */
-    public Boolean getLoadjqueryfromgoogle() {
+    public String getLoadjqueryfromgoogle() {
         return loadjqueryfromgoogle;
     }
 
     /**
      * @param loadjqueryfromgoogle the loadjqueryfromgoogle to set
      */
-    public void setLoadjqueryfromgoogle(Boolean loadjqueryfromgoogle) {
+    public void setLoadjqueryfromgoogle(String loadjqueryfromgoogle) {
         this.loadjqueryfromgoogle = loadjqueryfromgoogle;
     }
 

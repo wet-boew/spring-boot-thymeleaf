@@ -9,47 +9,46 @@ public enum WETModelKey {
 
     /** The cdn configuration file key. */
     // @formatter:off
-	CDN("cdn"),
+    CDN("cdn"),
 
-	/** The privacy link. */
-	PRIVACY_LINK("privacyLink"),
+    /** The privacy link. */
+    PRIVACY_LINK("privacyLink"),
 
-	/** The terms link. */
-	TERMS_LINK("termsLink"),
+    /** The terms link. */
+    TERMS_LINK("termsLink"),
 
-	/** The contact link. */
-	CONTACT_LINK("contactLink"),
+    /** The contact link. */
+    CONTACT_LINK("contactLink"),
 
-	/** The exit transaction. */
-	EXIT_TRANSACTION("exitTransactionLink"),
+    /** The exit transaction. */
+    EXIT_TRANSACTION("exitTransactionLink"),
 
-	/** The breadcrumbs. */
-	BREADCRUMBS("breadcrumbs"),
+    /** The breadcrumbs. */
+    BREADCRUMBS("breadcrumbs"),
 
-	/** The sections. */
-	SECTIONS("sections"),
+    /** The sections. */
+    SECTIONS("sections"),
 
-	/** The language url. */
-	LANGUAGE_URL("langUrl"),
+    /** The language url. */
+    LANGUAGE_URL("langUrl"),
 
-	/** The session timeout. */
-	SESSION_TIMEOUT("wetSessionTimeout"),
+    /** The session timeout. */
+    SESSION_TIMEOUT("wetSessionTimeout"),
 
-	/** The leaving secure site. */
-	LEAVING_SECURE_SITE("leavingSecureSite"),
+    /** The leaving secure site. */
+    LEAVING_SECURE_SITE("leavingSecureSite"),
 
-	/** The canada home key is for www.canada.ca . */
-	CANADA_HOME("canadaHome"),
+    /** The canada home key is for www.canada.ca . */
+    CANADA_HOME("canadaHome"),
 
-	/** The department home key. */
-	DEPARTMENT_HOME("departmentHome"),
+    /** The department home key. */
+    DEPARTMENT_HOME("departmentHome"),
 
-	/** The page section menu key hold the section menu for a specific page. */
-	PAGE_SECTION_MENU("pageSectionMenu");
+    /** The page section menu key hold the section menu for a specific page. */
+    PAGE_SECTION_MENU("pageSectionMenu");
 
-
-	/** The wet attribute name. */
-	// @formatter:on
+    /** The wet attribute name. */
+    // @formatter:on
     private String wetAttributeName;
 
     /**

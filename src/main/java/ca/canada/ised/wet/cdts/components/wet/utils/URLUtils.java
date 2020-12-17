@@ -29,68 +29,60 @@ public final class URLUtils {
     /** Constant for language parameter (e.g. URL query string). */
     public static final String PARAM_LANG = "lang";
 
+    private URLUtils() {
+    }
 
-	private URLUtils() {
-	}
-
-	/**
-     * Builds a "query string" based on given URL parameters,
-     * clearing up any "lang" parameter.  If you do not care about the
-     * presence of a language parameter, you may want to use
-     * {@link HttpServletRequest#getQueryString()} instead.
+    /**
+     * Builds a "query string" based on given URL parameters, clearing up any "lang" parameter. If you do not care about
+     * the presence of a language parameter, you may want to use {@link HttpServletRequest#getQueryString()} instead.
      *
-	 * @param requestParams URL request parameters
-	 * @return properly encoded query string
-	 */
-    public static String toLanguageNeutralQueryString(
-            Map<String, String[]> requestParams) {
+     * @param requestParams URL request parameters
+     * @return properly encoded query string
+     */
+    public static String toLanguageNeutralQueryString(Map<String, String[]> requestParams) {
         return toLanguageToggleQueryString(requestParams, (String) null);
     }
+
     /**
      * <p>
-     * Builds a language toggle "query string" based on given URL parameters.
-     * The query string is returned is an equivalent ready-to-use string
-     * with the "lang" parameter value toggled between its original value
-     * (if any) to the target locale.
+     * Builds a language toggle "query string" based on given URL parameters. The query string is returned is an
+     * equivalent ready-to-use string with the "lang" parameter value toggled between its original value (if any) to the
+     * target locale.
      * </p>
      * <p>
-     * If no target locale is supplied,
-     * the query string is simply returned without a language parameter.
+     * If no target locale is supplied, the query string is simply returned without a language parameter.
      * </p>
+     * 
      * @param requestParams URL request parameters
      * @param targetLocal locale
      * @return properly encoded query string
      */
-    public static String toLanguageToggleQueryString(
-            Map<String, String[]> requestParams, Locale targetLocale) {
-        return toLanguageToggleQueryString(
-                requestParams, Language.getLanguage(targetLocale));
+    public static String toLanguageToggleQueryString(Map<String, String[]> requestParams, Locale targetLocale) {
+        return toLanguageToggleQueryString(requestParams, Language.getLanguage(targetLocale));
     }
+
     /**
      * <p>
-     * Builds a language toggle "query string" based on given URL parameters.
-     * The query string is returned is an equivalent ready-to-use string
-     * with the "lang" parameter value toggled between its original value
-     * (if any) to the target language.
+     * Builds a language toggle "query string" based on given URL parameters. The query string is returned is an
+     * equivalent ready-to-use string with the "lang" parameter value toggled between its original value (if any) to the
+     * target language.
      * </p>
      * <p>
-     * If no target language is supplied,
-     * the query string is simply returned without a language parameter.
+     * If no target language is supplied, the query string is simply returned without a language parameter.
      * </p>
+     * 
      * @param requestParams URL request parameters
      * @param targetLanguage 3-letter ISO language code
      * @return properly encoded query string
      */
-	public static String toLanguageToggleQueryString(
-	        Map<String, String[]> requestParams, String targetLanguage) {
+    public static String toLanguageToggleQueryString(Map<String, String[]> requestParams, String targetLanguage) {
 
         StringBuilder qs = new StringBuilder();
         char separator = '?';
         for (Entry<String, String[]> entry : requestParams.entrySet()) {
             String name = entry.getKey();
             for (String value : entry.getValue()) {
-                if (!WETModelKey.LANGUAGE_URL.wetAttributeName().equals(name)
-                        && !PARAM_LANG.equals(name)) {
+                if (!WETModelKey.LANGUAGE_URL.wetAttributeName().equals(name) && !PARAM_LANG.equals(name)) {
                     qs.append(separator);
                     separator = '&';
                     qs.append(urlEncode(name));
@@ -105,16 +97,16 @@ public final class URLUtils {
             qs.append('=');
             qs.append(targetLanguage);
         }
-	    return qs.toString();
-	}
+        return qs.toString();
+    }
 
-	/**
-	 * Encodes a string into <code>application/x-www-form-urlencoded</code>
-	 * format using the <code>UTF-8</code> encoding scheme.
-	 * Use this method to encode HTTP request parameter names and values.
-	 * @param text text to encode
-	 * @return encoded text
-	 */
+    /**
+     * Encodes a string into <code>application/x-www-form-urlencoded</code> format using the <code>UTF-8</code> encoding
+     * scheme. Use this method to encode HTTP request parameter names and values.
+     * 
+     * @param text text to encode
+     * @return encoded text
+     */
     public static String urlEncode(String text) {
         try {
             return URLEncoder.encode(text, StandardCharsets.UTF_8.toString());
@@ -124,10 +116,11 @@ public final class URLUtils {
             return text;
         }
     }
+
     /**
-     * Decodes an <code>application/x-www-form-urlencoded</code>
-     * string using the <code>UTF-8</code> encoding scheme.
+     * Decodes an <code>application/x-www-form-urlencoded</code> string using the <code>UTF-8</code> encoding scheme.
      * Use this method to decode raw HTTP request parameter names and values.
+     * 
      * @param text text to decode
      * @return decoded text
      */

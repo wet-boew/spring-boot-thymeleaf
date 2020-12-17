@@ -1,0 +1,24 @@
+<<<<<<< HEAD
+=======
+# This YAML config file is used to build the Side Menu on the WET4 side layouts
+# this is a test file
+sectionMenuList: 
+    - sectionNameEn: Section unit test 1
+      sectionNameFr: Section unit test 1 FR
+      menuLinks: 
+      - textEn: Menu Item unit test 1
+        textFr: Menu Item unit test 1 FR
+        href: https://www.google.com
+      - textEn: Menu Item unit test 2
+        textFr: Menu Item unit test 2 FR
+        href: https://www.yahoo.com
+    - sectionNameEn: Section unit test 2
+      sectionNameFr: Section unit test 2 FR
+      menuLinks: 
+      - textEn: Menu Item unit test 1
+        textFr: Menu Item unit test 1 FR
+        href: https://www.gmail.com
+      - textEn: Menu Item unit test 2
+        textFr: Menu Item unit test 2 FR
+        href: https://www.youtube.com
+>>>>>>> refs/remotes/origin/master

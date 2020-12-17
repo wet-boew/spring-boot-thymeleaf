@@ -13,8 +13,8 @@
     <!-- Additional analytics, if required. -->
     <!--/*/ <th:block th:replace="analytics/analytics-header"></th:block> /*/-->    
     <!-- Load closure template scripts -->
-    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/soyutils.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.javascript} + '/cdts/compiled/soyutils.js'"></script>
-    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_25/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.javascript} + '/cdts/compiled/wet-' + #{lang} + '.js'"></script>
+    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_32/cdts/compiled/soyutils.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.javascript} + '/cdts/compiled/soyutils.js'"></script>
+    <script type="text/javascript" src="https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_32/cdts/compiled/wet-en.js" data-th-src="${cdn.url} + '/etc/designs/canada/cdts/' + ${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.javascript} + '/cdts/compiled/wet-' + #{lang} + '.js'"></script>
     <noscript>
       <!-- Write closure fall-back static file -->
       <div data-th-replace="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/refTop'"></div>
@@ -24,7 +24,7 @@
       /*<![CDATA[*/
       document.write(wet.builder.refTop({
           cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
-          jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false
+          jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ "internal"
       }));
       /*]]>*/
     </script>
@@ -122,7 +122,7 @@
       /*<![CDATA[*/
         document.write(wet.builder.refFooter({
             cdnEnv: /*[[${cdn.environment}]]*/ "Akamai",
-            jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ false,
+            jqueryEnv: /*[[${cdn.wettemplate.loadjqueryfromgoogle}]]*/ "internal",
             exitScript: /*[[${cdn.leavingsecuresitewarning.enabled}]]*/ false,
             exitURL: /*[[${cdn.leavingsecuresitewarning.redirecturl}]]*/ "#",
             exitMsg: "You are about to leave a secure site, do you wish to continue?",

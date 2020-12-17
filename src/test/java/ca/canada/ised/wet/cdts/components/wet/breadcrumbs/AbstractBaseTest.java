@@ -18,8 +18,8 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
-@SpringBootTest(classes = { WetCdtsSpringBootThymeleafTestConfig.class })
-@ActiveProfiles(profiles = { "test" })
+@SpringBootTest(classes = {WetCdtsSpringBootThymeleafTestConfig.class})
+@ActiveProfiles(profiles = {"test"})
 public abstract class AbstractBaseTest {
 
     /** The WebApplicationContext. */

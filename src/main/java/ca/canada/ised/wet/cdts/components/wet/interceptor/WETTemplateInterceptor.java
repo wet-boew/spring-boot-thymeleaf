@@ -16,8 +16,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.BreadCrumbs;
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.BreadcrumbService;
@@ -36,7 +36,7 @@ import ca.canada.ised.wet.cdts.components.wet.utils.URLUtils;
  * @author Frank Giusto
  */
 @Component
-public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
+public class WETTemplateInterceptor implements AsyncHandlerInterceptor {
 
     /** Logging instance. */
     private static final Logger LOG = LoggerFactory.getLogger(WETTemplateInterceptor.class);
@@ -191,8 +191,7 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     private void setBreadCrumbs(ModelAndView modelAndView, HttpServletRequest request) {
 
         // Get view breadCrumbs
-        String url = request.getRequestURI()
-                + URLUtils.toLanguageNeutralQueryString(request.getParameterMap());
+        String url = request.getRequestURI() + URLUtils.toLanguageNeutralQueryString(request.getParameterMap());
         breadcrumbsService.buildBreadCrumbs(modelAndView.getViewName(), url);
         List<Object> viewBreadCrumbs = breadcrumbsService.getBreadCrumbList();
         String breadCrumbsKey = WETModelKey.BREADCRUMBS.wetAttributeName();
@@ -232,16 +231,10 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
      * @param modelAndView the model and view
      * @param request the request
      */
-    private void setLanguageRequestUrl(
-            ModelAndView modelAndView, HttpServletRequest request) {
-        modelAndView.addObject(
-                WETModelKey.LANGUAGE_URL.wetAttributeName(),
-                URLUtils.toLanguageToggleQueryString(
-                    request.getParameterMap(),
-                    applicationMessageSource.getMessage(
-                            "locale.other",
-                            null,
-                            LocaleContextHolder.getLocale())));
+    private void setLanguageRequestUrl(ModelAndView modelAndView, HttpServletRequest request) {
+        modelAndView.addObject(WETModelKey.LANGUAGE_URL.wetAttributeName(),
+            URLUtils.toLanguageToggleQueryString(request.getParameterMap(),
+                applicationMessageSource.getMessage("locale.other", null, LocaleContextHolder.getLocale())));
     }
 
     /**
@@ -305,6 +298,25 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
         exitScript.setExitExcludedDomains(cdnSettings.getLeavingsecuresitewarning().getExcludeddomains());
 
         modelAndView.addObject(WETModelKey.LEAVING_SECURE_SITE.wetAttributeName(), exitScript);
+    }
+
+    // the following were copied out of HandlerInterceptorAdapter from when this code used to extend this class. Once
+    // this code base moves to spring boot 2.4.x then we can delete these methods
+
+    /**
+     * This implementation is empty.
+     */
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+        throws Exception {
+    }
+
+    /**
+     * This implementation is empty.
+     */
+    @Override
+    public void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler)
+        throws Exception {
     }
 
 }
