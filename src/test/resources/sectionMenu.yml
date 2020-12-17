@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # This YAML config file is used to build the Side Menu on the WET4 side layouts
 # this is a test file
 sectionMenuList: 
@@ -21,4 +19,3 @@ sectionMenuList:
       - textEn: Menu Item unit test 2
         textFr: Menu Item unit test 2 FR
         href: https://www.youtube.com
->>>>>>> refs/remotes/origin/master
