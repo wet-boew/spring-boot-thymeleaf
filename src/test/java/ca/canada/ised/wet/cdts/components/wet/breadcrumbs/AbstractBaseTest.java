@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 // TODO when upgrading to spring boot 1.4 or greater, change this to @SpringBootTest
 // https://stackoverflow.com/a/47628588/2055199
+// @SpringBootTest(classes = {WetCdtsSpringBootThymeleafTestConfig.class})
 @SpringApplicationConfiguration(classes = {WetCdtsSpringBootThymeleafTestConfig.class})
 @ActiveProfiles(profiles = {"test"})
 public abstract class AbstractBaseTest {
