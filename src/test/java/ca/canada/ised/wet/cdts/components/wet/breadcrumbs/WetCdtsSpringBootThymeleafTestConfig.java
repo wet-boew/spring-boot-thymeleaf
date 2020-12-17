@@ -16,8 +16,7 @@ import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import ca.canada.ised.wet.cdts.WetCdtsSpringBootThymeleafConfig;
 
 /**
- * WetCdtsSpringBootThymeleafTestConfig. Enables auto configuration so that
- * tests will run.
+ * WetCdtsSpringBootThymeleafTestConfig. Enables auto configuration so that tests will run.
  *
  * @author Frank Giusto, Andrew Pitt
  * @since 1.0.0-SNAPSHOT
@@ -26,26 +25,26 @@ import ca.canada.ised.wet.cdts.WetCdtsSpringBootThymeleafConfig;
 @EnableAutoConfiguration
 public class WetCdtsSpringBootThymeleafTestConfig extends WetCdtsSpringBootThymeleafConfig {
 
-	/**
-	 * Test message source. The WET message source is set as the parent.
-	 * 
-	 * @return <code>MessageSource</code>
-	 */
-	@Bean(name = "messageSource")
-	public MessageSource messageSource() {
-		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-		messageSource.setBasenames("cdn/cdn", "cdn/cdn_override", "cdn/common_messages");
-		return messageSource;
-	}
+    /**
+     * Test message source. The WET message source is set as the parent.
+     * 
+     * @return <code>MessageSource</code>
+     */
+    @Bean(name = "messageSource")
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames("cdn/cdn", "cdn/cdn_override", "cdn/common_messages");
+        return messageSource;
+    }
 
-	/**
-	 * Test locale resolver.
-	 * 
-	 * @return <code>LocaleResolver</code>
-	 */
-	@Bean
-	public LocaleResolver localeResolver() {
-		FixedLocaleResolver localeResolver = new FixedLocaleResolver(Locale.CANADA);
-		return localeResolver;
-	}
+    /**
+     * Test locale resolver.
+     * 
+     * @return <code>LocaleResolver</code>
+     */
+    @Bean
+    public LocaleResolver localeResolver() {
+        FixedLocaleResolver localeResolver = new FixedLocaleResolver(Locale.CANADA);
+        return localeResolver;
+    }
 }
