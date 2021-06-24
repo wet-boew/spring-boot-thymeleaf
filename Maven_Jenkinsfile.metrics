@@ -1,0 +1,21 @@
+@Library('ised-cicd-lib') _
+
+pipeline {
+	agent {
+       	label 'maven'
+   	}
+   	
+    options {
+        disableConcurrentBuilds()
+    }
+    
+    stages {
+    	stage('analyze') {
+			steps {
+				script{
+					metrics.runCodeCoverage()
+		    	}
+			}
+    	}
+    }
+}
