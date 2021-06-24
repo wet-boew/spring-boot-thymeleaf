@@ -11,11 +11,11 @@ pipeline {
   
     stages {
     	stage('build') {
-			steps {
-				script{
-	    			builder.buildMavenLibrary()
-				}
+		steps {
+			script{
+			builder.buildMavenLibrary()
 			}
+		}
     	}
     }
 }
