@@ -13,7 +13,7 @@ pipeline {
     	stage('build') {
 		steps {
 			script{
-			builder.buildMavenLibrary()
+				builder.buildMavenLibrary()
 			}
 		}
     	}
