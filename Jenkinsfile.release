@@ -1,4 +1,4 @@
-@Library('ised-cicd-lib') _
+@Library(["ised-cicd-lib@CLOUDCICD-513", "ised-cicd-lib-api"]) _
 
 pipeline {
 	agent {
@@ -8,10 +8,6 @@ pipeline {
     options {
         disableConcurrentBuilds()
     }
-    
-	environment {
-		MVN_DEBUG_LOGGING = "true"
-	}
     
     stages {
 		stage('release') {
