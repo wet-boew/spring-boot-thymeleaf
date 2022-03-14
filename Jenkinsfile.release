@@ -9,6 +9,10 @@ pipeline {
         disableConcurrentBuilds()
     }
     
+	environment {
+		MVN_DEBUG_LOGGING = "true"
+	}
+    
     stages {
 		stage('release') {
 			steps {
