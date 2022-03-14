@@ -1,4 +1,4 @@
-@Library(["ised-cicd-lib@CLOUDCICD-513", "ised-cicd-lib-api"]) _
+@Library(["ised-cicd-lib", "ised-cicd-lib-api"]) _
 
 pipeline {
 	agent {
