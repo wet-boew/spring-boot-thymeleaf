@@ -13,7 +13,7 @@
   <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
 
   <!-- Version matches the WET version supported by CDTS. -->
-  <version>4.0.44.5</version>
+  <version>4.0.44.5-SNAPSHOT</version>
 
   <name>WET CDTS Spring Boot Thymeleaf Starter</name>
   <packaging>jar</packaging>
