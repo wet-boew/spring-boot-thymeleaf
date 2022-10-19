@@ -2,20 +2,24 @@
 
 pipeline {
 	agent {
-       	 label 'maven'
-   	}
+    label 'maven'
+  }
+
+  tools {
+    jdk 'openjdk-11'
+  }
    	
-    options {
-        disableConcurrentBuilds()
+  options {
+    disableConcurrentBuilds()
+  }
+
+  stages {
+    stage('build') {
+      steps {
+        script {
+          builder.buildMavenLibrary()
+        }
+      }
     }
-  
-    stages {
-    	stage('build') {
-		steps {
-			script{
-				builder.buildMavenLibrary()
-			}
-		}
-    	}
-    }
+  }
 }
