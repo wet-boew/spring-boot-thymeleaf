@@ -126,7 +126,7 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
             }
         }
         LOG.info(" *****************************");
-        // assertEquals(bcList.size() == 2);
+        assertEquals(3, bcList.size());
     }
 
     @Test
