@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.3.8.RELEASE</version>
+    <version>3.0.0-M5</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -12,15 +12,14 @@
   <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
 
   <!-- Version matches the WET version supported by CDTS. -->
-  <version>4.0.44.10-SNAPSHOT</version>
+  <!-- currently setting to a version that matches spring -->
+  <version>6.0.0.0-SNAPSHOT</version>
 
   <name>WET CDTS Spring Boot Thymeleaf Starter</name>
   <packaging>jar</packaging>
 
   <properties>
-    <java.version>1.7</java.version>
-    <spring.boot.version>1.3.8.RELEASE</spring.boot.version>
-    <spring.version>4.3.30.RELEASE</spring.version>
+    <java.version>17</java.version>
     <commons.lang3.version>3.8.1</commons.lang3.version>
     <glassfish.version>3.1.1</glassfish.version>
     <!-- Release Plugin Info. -->
@@ -39,29 +38,12 @@
     </snapshotRepository>
   </distributionManagement>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- TODO override importing the spring bom at a later time when spring boot can be upgraded -->
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-framework-bom</artifactId>
-        <version>${spring.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <!-- Import dependency management from Spring Boot -->
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring.boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
-
   <dependencies>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
@@ -98,6 +80,7 @@
       <groupId>org.glassfish</groupId>
       <artifactId>javax.servlet</artifactId>
       <version>${glassfish.version}</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Thymeleaf. -->
     <dependency>
@@ -127,12 +110,6 @@
       <artifactId>groovy</artifactId>
       <version>2.4.21</version>
     </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -147,7 +124,12 @@
           <artifactId>maven-release-plugin</artifactId>
           <version>2.5.3</version>
         </plugin>
-	<plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>2.10.4</version>

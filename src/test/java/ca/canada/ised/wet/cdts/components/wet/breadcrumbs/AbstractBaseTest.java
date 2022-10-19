@@ -2,13 +2,11 @@ package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 
 import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -16,12 +14,8 @@ import org.springframework.web.context.WebApplicationContext;
  * Base transactional test for this project. We have this here to minimize the number of times the app context is
  * created and torn down.
  */
-@RunWith(SpringRunner.class)
 @WebAppConfiguration
-// TODO when upgrading to spring boot 1.4 or greater, change this to @SpringBootTest
-// https://stackoverflow.com/a/47628588/2055199
-// @SpringBootTest(classes = {WetCdtsSpringBootThymeleafTestConfig.class})
-@SpringApplicationConfiguration(classes = {WetCdtsSpringBootThymeleafTestConfig.class})
+@SpringBootTest(classes = {WetCdtsSpringBootThymeleafTestConfig.class})
 @ActiveProfiles(profiles = {"test"})
 public abstract class AbstractBaseTest {
 
@@ -32,7 +26,7 @@ public abstract class AbstractBaseTest {
     /**
      * Execute before each test.
      */
-    @Before
+    @BeforeEach
     public void baseBefore() {
         toEnglish();
     }

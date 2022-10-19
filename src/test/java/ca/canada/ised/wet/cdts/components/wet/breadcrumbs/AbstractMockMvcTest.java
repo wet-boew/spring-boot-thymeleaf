@@ -3,7 +3,7 @@
  */
 package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -21,7 +21,7 @@ public abstract class AbstractMockMvcTest extends AbstractBaseTest {
     /**
      * Setup.
      */
-    @Before
+    @BeforeEach
     public void before() {
         mockMvc = MockMvcBuilders.webAppContextSetup(getWebAppContext()).dispatchOptions(true).build();
     }

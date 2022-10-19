@@ -1,9 +1,9 @@
 package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.servlet.ServletContext;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
+import jakarta.servlet.ServletContext;
 
 /**
  * @author fgiusto
@@ -199,6 +198,6 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
         }
         latch.await();
 
-        assertTrue("should not be any exceptions from the threads but was " + exceptions, exceptions.isEmpty());
+        assertTrue(exceptions.isEmpty(), "should not be any exceptions from the threads but was " + exceptions);
     }
 }
