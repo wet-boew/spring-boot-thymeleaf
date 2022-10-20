@@ -15,7 +15,7 @@ Also, since the templates are based on Thymeleaf, they are plain HTML5 by defaul
 ## Building wet-cdts-spring-boot-thymeleaf-starter
 
 * Clone the repository
-* From the repository root, run `maven install`
+* From the repository root, using java 8, run `maven install`
 
 ## How to use wet-cdts-spring-boot-thymeleaf-starter
 
