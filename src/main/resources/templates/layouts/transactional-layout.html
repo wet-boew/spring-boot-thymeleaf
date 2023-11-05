@@ -66,7 +66,7 @@
       <!-- end main content -->
       <div id="def-preFooter">
         <!-- Write closure fall-back static file -->
-        <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/preFooter-' + #{lang}"></div>
+        <div data-th-insert="~{${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/preFooter-' + #{lang}}"></div>
       </div>
       <!-- Write closure template -->
       <script data-th-inline="javascript">
@@ -84,7 +84,7 @@
     </main>    
     <div id="def-footer">
       <!-- Write closure fall-back static file -->
-      <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/footer-' + #{lang}"></div>
+      <div data-th-insert="~{${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/footer-' + #{lang}}"></div>
     </div>
     <!-- Write closure template -->
     <script data-th-inline="javascript">

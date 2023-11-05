@@ -68,7 +68,7 @@
           <!-- end main content -->
           <div id="def-preFooter">
             <!-- Write closure fall-back static file -->
-            <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/preFooter-' + #{lang}"></div>
+            <div data-th-insert="~{${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/preFooter-' + #{lang}}"></div>
           </div>   
           <!-- Write closure template -->
           <script data-th-inline="javascript">
@@ -86,7 +86,7 @@
         </main>
         <nav class="wb-sec col-md-3 col-md-pull-9" typeof="SiteNavigationElement" id="wb-sec" role="navigation">
           <!-- Write closure fall-back static file -->     
-          <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/secMenu-' + #{lang}"></div>    
+          <div data-th-insert="~{${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/secMenu-' + #{lang}}"></div>    
         </nav>
         <!-- Write closure template -->
         <script data-th-inline="javascript">
@@ -101,7 +101,7 @@
     </div>            
     <div id="def-footer">
       <!-- Write closure fall-back static file -->
-      <div data-th-include="${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/transactFooter-' + #{lang}"></div>
+      <div data-th-insert="~{${cdn.wettemplate.theme} + '/' + ${cdn.wettemplate.version.template} + '/transactFooter-' + #{lang}}"></div>
     </div>
     <!-- Write closure template -->
     <script data-th-inline="javascript">
