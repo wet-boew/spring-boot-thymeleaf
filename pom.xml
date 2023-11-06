@@ -3,13 +3,14 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.3.8.RELEASE</version>
+    <version>3.1.5</version>
+    <relativePath />
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ca.canada.ised.wet.cdts</groupId>
-  <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
+  <artifactId>wet-cdts-spring-boot3-thymeleaf-starter</artifactId>
 
   <!-- Version matches the WET version supported by CDTS. -->
   <version>4.0.44.10-SNAPSHOT</version>
@@ -18,11 +19,8 @@
   <packaging>jar</packaging>
 
   <properties>
-    <java.version>1.7</java.version>
-    <spring.boot.version>1.3.8.RELEASE</spring.boot.version>
-    <spring.version>4.3.30.RELEASE</spring.version>
-    <commons.lang3.version>3.8.1</commons.lang3.version>
-    <glassfish.version>3.1.1</glassfish.version>
+    <java.version>17</java.version>
+    <commons.lang3.version>3.13.0</commons.lang3.version>
     <!-- Release Plugin Info. -->
     <git.project.id>wet-boew</git.project.id>
     <git.repo.name>spring-boot-thymeleaf</git.repo.name>
@@ -39,29 +37,12 @@
     </snapshotRepository>
   </distributionManagement>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- TODO override importing the spring bom at a later time when spring boot can be upgraded -->
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-framework-bom</artifactId>
-        <version>${spring.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <!-- Import dependency management from Spring Boot -->
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring.boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
-
   <dependencies>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
@@ -94,11 +75,6 @@
       <artifactId>spring-boot-configuration-processor</artifactId>
       <optional>true</optional>
     </dependency>
-    <dependency>
-      <groupId>org.glassfish</groupId>
-      <artifactId>javax.servlet</artifactId>
-      <version>${glassfish.version}</version>
-    </dependency>
     <!-- Thymeleaf. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -114,24 +90,10 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>${commons.lang3.version}</version>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
-    </dependency>
-
-    <!-- bumping up groovy to address CVE-2020-17521 -->
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>2.4.21</version>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -140,17 +102,22 @@
       <plugins>
         <plugin>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.3.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.3</version>
+          <version>3.0.1</version>
         </plugin>
-	<plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.1.1</version>
+        </plugin>
+        <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.4</version>
+            <version>3.6.0</version>
             <configuration>
                 <skip>true</skip>
                 <skipDeploy>true</skipDeploy>

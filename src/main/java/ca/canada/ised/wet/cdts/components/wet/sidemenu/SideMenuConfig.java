@@ -4,8 +4,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
+
+import jakarta.annotation.PostConstruct;
 
 /**
  * The Class SideMenuConfig is populated with the contents of sectionMenu.yml which contains the WET4 side menu text and

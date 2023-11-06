@@ -1,9 +1,13 @@
 @Library(["ised-cicd-lib", "ised-cicd-lib-api"]) _
 
 pipeline {
-	agent {
-       	label 'maven'
-   	}
+  agent {
+    label 'maven'
+  }
+
+  tools {
+    jdk 'openjdk-17'
+  }
    	
     options {
         disableConcurrentBuilds()
