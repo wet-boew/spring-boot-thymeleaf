@@ -12,6 +12,18 @@ This makes getting started with CDTS very easy, and your code will not rely on a
 
 Also, since the templates are based on Thymeleaf, they are plain HTML5 by default and require no tags.  This makes them much easier to read.
 
+## Version
+
+### Current
+The current version of this library has the artifactId of `wet-cdts-spring-boot3-thymeleaf-starter` and the following requirements
+* Java 17 minimum
+* JakartaEE
+* spring boot 3 / spring 6
+
+### Legacy
+For spring boot 1.x / spring 4.x / Java EE / Java 7 minimum, please use use the artifact `wet-cdts-spring-boot-thymeleaf-starter` that's found under the 
+[thymeleaf2 branch](https://github.com/wet-boew/spring-boot-thymeleaf/tree/thymeleaf2).
+
 ## Building wet-cdts-spring-boot-thymeleaf-starter
 
 * Clone the repository
@@ -23,8 +35,8 @@ Also, since the templates are based on Thymeleaf, they are plain HTML5 by defaul
 ```
     <dependency>
       <groupId>ca.canada.ised.wet.cdts</groupId>
-      <artifactId>wet-cdts-spring-boot-thymeleaf-starter</artifactId>
-      <version>4.0.32.0</version>
+      <artifactId>wet-cdts-spring-boot3-thymeleaf-starter</artifactId>
+      <version>RELEASE</version>
     </dependency>
 ```
 
