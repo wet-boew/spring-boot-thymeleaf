@@ -4,7 +4,11 @@ pipeline {
 	agent {
        	label 'maven'
    	}
-   	
+
+  tools {
+    jdk 'openjdk-17'
+  }
+  
     options {
         disableConcurrentBuilds()
     }
