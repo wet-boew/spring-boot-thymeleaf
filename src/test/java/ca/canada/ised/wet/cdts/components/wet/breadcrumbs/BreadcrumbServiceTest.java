@@ -73,7 +73,7 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
 
         BreadCrumbLink breadcrumb = (BreadCrumbLink) bcList.get(0);
         assertEquals("Home", breadcrumb.getTitle());
-        assertEquals("http://www.canada.ca/en/index.html", breadcrumb.getHref());
+        assertEquals("https://www.canada.ca/en/index.html", breadcrumb.getHref());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
 
         BreadCrumbLink breadcrumb = (BreadCrumbLink) bcList.get(0);
         assertEquals("Accueil", breadcrumb.getTitle());
-        assertEquals("http://www.canada.ca/fr/index.html", breadcrumb.getHref());
+        assertEquals("https://www.canada.ca/fr/index.html", breadcrumb.getHref());
 
         assertEquals(3, bcList.size());
     }
