@@ -13,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.AbstractMockMvcTest;
 import ca.canada.ised.wet.cdts.components.wet.config.WETModelKey;
 import ca.canada.ised.wet.cdts.components.wet.config.WETSettings;
-import ca.canada.ised.wet.cdts.components.wet.config.beans.WETUrl;
 
 @DirtiesContext
 public class WETTemplateInterceptorTest extends AbstractMockMvcTest {
