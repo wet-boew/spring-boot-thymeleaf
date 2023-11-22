@@ -14,6 +14,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.AbstractMockMvcTest;
+import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.BreadCrumb;
+import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.BreadCrumbs;
 import ca.canada.ised.wet.cdts.components.wet.config.WETModelKey;
 import ca.canada.ised.wet.cdts.components.wet.config.WETSettings;
 
@@ -56,10 +58,58 @@ public class WETTemplateInterceptorTest extends AbstractMockMvcTest {
         wetSettings.getSession().setAdditionaldata("unit-test");
 
         ModelAndView mav = new ModelAndView("unit-test");
+        // add some breadcrumbs
+        BreadCrumbs bc = new BreadCrumbs();
+        bc.getList().add(new BreadCrumb("something-unit-test"));
+        mav.addObject(WETModelKey.BREADCRUMBS.wetAttributeName(), bc);
+
         interceptor.postHandle(request, response, null, mav);
         // TODO check that the model objects where put in here correctly
 
         assertNotNull(mav.getModel().get(WETModelKey.SESSION_TIMEOUT.wetAttributeName()),
+            "session timeout shouldn't be null");
+    }
+
+    @Test
+    public void postHandle_NoBreadcumbsIntList() throws Exception {
+        ModelAndView mav = new ModelAndView("unit-test");
+        // no breadcrumbs
+        BreadCrumbs bc = new BreadCrumbs();
+        bc.getList().clear();
+        mav.addObject(WETModelKey.BREADCRUMBS.wetAttributeName(), bc);
+
+        interceptor.postHandle(request, response, null, mav);
+        // TODO check that the model objects where put in here correctly
+
+        assertNotNull(mav.getModel().get(WETModelKey.BREADCRUMBS.wetAttributeName()),
+            "session timeout shouldn't be null");
+    }
+
+    @Test
+    public void postHandle_BreadcumbsListNull() throws Exception {
+        ModelAndView mav = new ModelAndView("unit-test");
+        // no breadcrumbs
+        BreadCrumbs bc = new BreadCrumbs();
+        bc.setList(null);
+        mav.addObject(WETModelKey.BREADCRUMBS.wetAttributeName(), bc);
+
+        interceptor.postHandle(request, response, null, mav);
+        // TODO check that the model objects where put in here correctly
+
+        assertNotNull(mav.getModel().get(WETModelKey.BREADCRUMBS.wetAttributeName()),
+            "session timeout shouldn't be null");
+    }
+
+    @Test
+    public void postHandle_BreadcumbsModelObjectNotBreadcumbs() throws Exception {
+        ModelAndView mav = new ModelAndView("unit-test");
+        mav.addObject(WETModelKey.BREADCRUMBS.wetAttributeName(),
+            "this is strange that we have a test for putting the wrong object type into the model");
+
+        interceptor.postHandle(request, response, null, mav);
+        // TODO check that the model objects where put in here correctly
+
+        assertNotNull(mav.getModel().get(WETModelKey.BREADCRUMBS.wetAttributeName()),
             "session timeout shouldn't be null");
     }
 
@@ -132,6 +182,18 @@ public class WETTemplateInterceptorTest extends AbstractMockMvcTest {
 
         // check things
         assertEquals("", mav.getModel().get(WETModelKey.EXIT_TRANSACTION.wetAttributeName()),
+            "exit transition should be empty");
+    }
+
+    @Test
+    public void postHandle_AddPageSectionsToSection() throws Exception {
+        String menu = "something";
+        ModelAndView mav = new ModelAndView("unit-test");
+        mav.getModel().put(WETModelKey.PAGE_SECTION_MENU.wetAttributeName(), menu);
+        interceptor.postHandle(request, response, null, mav);
+
+        // check things
+        assertEquals(menu, mav.getModel().get(WETModelKey.SECTIONS.wetAttributeName()),
             "exit transition should be empty");
     }
 
