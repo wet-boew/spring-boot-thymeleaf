@@ -3,14 +3,11 @@ package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import jakarta.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 
 import ca.canada.ised.wet.cdts.components.wet.config.WETModelKey;
 import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
+import jakarta.servlet.ServletContext;
 
 /**
  * The Class BreadcrumbServiceImpl is responsible for building and retrieving application breadcrumbs.
@@ -133,7 +131,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
     @Override
     public List<Object> getBreadCrumbList() {
 
-        if (breadcrumbSession.getBreadCrumbMap().size() == 0) {
+        if (breadcrumbSession.getBreadCrumbMap().isEmpty()) {
             LOG.error("No Breadcrumbs exist. We at least need a Home link.");
             return new ArrayList<>();
         }
@@ -142,10 +140,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
 
         checkApplicationHome();
 
-        Iterator<String> breadcrumbKeyIterator = getBreadcrumbMap().keySet().iterator();
-
-        while (breadcrumbKeyIterator.hasNext()) {
-            String breadcrumbKey = breadcrumbKeyIterator.next();
+        for (String breadcrumbKey : getBreadcrumbMap().keySet()) {
             breadCrumbList.add(setBreadCrumbLanguageTitle(breadcrumbKey, getBreadcrumbMap().get(breadcrumbKey)));
         }
         return adjustForBreadcrumbLength(breadCrumbList);
@@ -216,11 +211,8 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
         }
 
         Collection<BreadCrumb> crumbs = getBreadcrumbMap().values();
-        Iterator<BreadCrumb> iterator = crumbs.iterator();
-
         int idx = 0;
-        while (iterator.hasNext()) {
-            BreadCrumb breadCrumb = iterator.next();
+        for (BreadCrumb breadCrumb : crumbs) {
             if (idx == HOME_AND_DEPARTMENT) {
                 ajustedBreadCrumbList.put(extractView(rootKey), createBreadCrumb(extractView(rootKey),
                     servletContext.getContextPath(), "", breadcrumbMessageSource));
@@ -471,10 +463,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
 
         Map<String, BreadCrumb> ajustedBreadCrumbList = new LinkedHashMap<>();
         Collection<BreadCrumb> crumbs = getBreadcrumbMap().values();
-        Iterator<BreadCrumb> iterator = crumbs.iterator();
-
-        while (iterator.hasNext()) {
-            BreadCrumb breadCrumb = iterator.next();
+        for (BreadCrumb breadCrumb : crumbs) {
             if (breadCrumb.getViewName().equals(currentView)) {
                 ajustedBreadCrumbList.put(breadCrumb.getViewName(), breadCrumb);
                 break;
