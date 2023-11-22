@@ -21,6 +21,8 @@
   <properties>
     <java.version>17</java.version>
     <commons.lang3.version>3.13.0</commons.lang3.version>
+    <!-- TODO remove when moving to boot 3.2.x -->
+    <snakeyaml.version>2.2</snakeyaml.version>
     <!-- Release Plugin Info. -->
     <git.project.id>wet-boew</git.project.id>
     <git.repo.name>spring-boot-thymeleaf</git.repo.name>
