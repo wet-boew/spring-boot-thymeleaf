@@ -1,6 +1,8 @@
 package ca.canada.ised.wet.cdts.components.wet.interceptor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.AbstractMockMvcTest;
@@ -87,6 +90,49 @@ public class WETTemplateInterceptorTest extends AbstractMockMvcTest {
         assertNotNull(mav.getModel().get(WETModelKey.CONTACT_LINK.wetAttributeName()), "contact url shouldn't be null");
         assertNotNull(mav.getModel().get(WETModelKey.PRIVACY_LINK.wetAttributeName()), "privacy shouldn't be null");
         assertNotNull(mav.getModel().get(WETModelKey.TERMS_LINK.wetAttributeName()), "terms shouldn't be null");
+    }
+
+    @Test
+    public void postHandle_NoModelAndView() throws Exception {
+        ModelAndView mav = null;
+        interceptor.postHandle(request, response, null, mav);
+    }
+
+    @Test
+    public void postHandle_ModelAndViewHasNoName() throws Exception {
+        ModelAndView mav = new ModelAndView();
+        interceptor.postHandle(request, response, null, mav);
+    }
+
+    @Test
+    public void postHandle_NoBreadcrumbs() throws Exception {
+        String fieldName = "includeBreadCrumbs";
+        ReflectionTestUtils.setField(interceptor, fieldName, Boolean.FALSE);
+
+        ModelAndView mav = new ModelAndView("unit-test");
+        interceptor.postHandle(request, response, null, mav);
+
+        // restore it back to true before the asserts
+        ReflectionTestUtils.setField(interceptor, fieldName, Boolean.TRUE);
+
+        // check things
+        assertNull(mav.getModel().get(WETModelKey.BREADCRUMBS.wetAttributeName()), "breadcrumbs should be null");
+    }
+
+    @Test
+    public void postHandle_NoExitTransaction() throws Exception {
+        String fieldName = "showExitTransaction";
+        ReflectionTestUtils.setField(interceptor, fieldName, Boolean.FALSE);
+
+        ModelAndView mav = new ModelAndView("unit-test");
+        interceptor.postHandle(request, response, null, mav);
+
+        // restore it back to true before the asserts
+        ReflectionTestUtils.setField(interceptor, fieldName, Boolean.TRUE);
+
+        // check things
+        assertEquals("", mav.getModel().get(WETModelKey.EXIT_TRANSACTION.wetAttributeName()),
+            "exit transition should be empty");
     }
 
 }
