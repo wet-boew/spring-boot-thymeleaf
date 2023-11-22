@@ -3,9 +3,6 @@ package ca.canada.ised.wet.cdts.components.wet.interceptor;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +25,12 @@ import ca.canada.ised.wet.cdts.components.wet.exit.ExitTransaction;
 import ca.canada.ised.wet.cdts.components.wet.footer.ContactInformation;
 import ca.canada.ised.wet.cdts.components.wet.sidemenu.SideMenuConfig;
 import ca.canada.ised.wet.cdts.components.wet.utils.URLUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * The Class WETTemplateInterceptor populates the Spring Thymeleaf WET Template with properties from
- * the cdn.properties file or any page level overrides.
+ * The Class WETTemplateInterceptor populates the Spring Thymeleaf WET Template with properties from the cdn.properties
+ * file or any page level overrides.
  *
  * @author Frank Giusto
  */
@@ -96,7 +95,7 @@ public class WETTemplateInterceptor implements AsyncHandlerInterceptor {
             setSideMenu(modelAndView);
 
             // Breadcrumbs
-            if (includeBreadCrumbs) {
+            if (Boolean.TRUE.equals(includeBreadCrumbs)) {
                 setBreadCrumbs(modelAndView, request);
             }
 
@@ -168,7 +167,7 @@ public class WETTemplateInterceptor implements AsyncHandlerInterceptor {
     private void setExitTransaction(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
         // TODO It would be nice to do this only for pages using Transaction
         // layouts.
-        if (showExitTransaction) {
+        if (Boolean.TRUE.equals(showExitTransaction)) {
             List<ExitTransaction> exitTransactionList = new ArrayList<>();
             ExitTransaction exitTransaction = new ExitTransaction();
             exitTransaction.setHref(request.getContextPath() + cdnSettings.getExit().getUrl());
