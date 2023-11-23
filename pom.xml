@@ -122,7 +122,6 @@
             <version>3.6.2</version>
             <configuration>
                 <skip>true</skip>
-                <skipDeploy>true</skipDeploy>
             </configuration>
         </plugin>
       </plugins>
