@@ -23,6 +23,10 @@
     <!-- Release Plugin Info. -->
     <git.project.id>wet-boew</git.project.id>
     <git.repo.name>spring-boot-thymeleaf</git.repo.name>
+    
+    <!-- TODO remove later when spring updates what is used by default -->
+    <!-- CVE-2023-51074 -->
+    <json-path.version>2.9.0</json-path.version>
   </properties>
 
   <distributionManagement>
