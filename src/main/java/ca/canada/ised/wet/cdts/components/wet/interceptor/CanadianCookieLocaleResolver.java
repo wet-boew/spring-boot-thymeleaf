@@ -2,9 +2,7 @@ package ca.canada.ised.wet.cdts.components.wet.interceptor;
 
 import java.util.Locale;
 
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,11 +16,7 @@ public class CanadianCookieLocaleResolver extends CookieLocaleResolver {
 
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
-        LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
-        if (localeResolver == null) {
-            throw new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?");
-        }
-        Locale locale = localeResolver.resolveLocale(request);
+        Locale locale = super.resolveLocale(request);
         return CanadianLocaleUtil.toCanadianLocale(locale);
     }
 
