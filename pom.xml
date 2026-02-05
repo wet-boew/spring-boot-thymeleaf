@@ -109,7 +109,7 @@
       <version>2.4.21</version>
     </dependency>
 
-    <!-- until all tests converted to junit 5, we need to have this in so maven plugin picks up teh tests -->
+    <!-- until all tests converted to junit 5, we need to have this in so maven plugin picks up the tests -->
     <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
