@@ -20,7 +20,7 @@
   <properties>
     <java.version>8</java.version>
     <glassfish.version>3.1.1</glassfish.version>
-    <commons.lang3.version>3.8.1</commons.lang3.version>
+    <commons.lang3.version>3.20.0</commons.lang3.version>
     <!-- https://stackoverflow.com/a/56218087/2055199 -->
     <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
     <!-- Release Plugin Info. -->
@@ -102,13 +102,6 @@
       <version>${commons.lang3.version}</version>
     </dependency>
 
-    <!-- bumping up groovy to address CVE-2020-17521 -->
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>2.4.21</version>
-    </dependency>
-
     <!-- until all tests converted to junit 5, we need to have this in so maven plugin picks up the tests -->
     <dependency>
       <groupId>org.junit.vintage</groupId>
@@ -122,20 +115,19 @@
       <plugins>
         <plugin>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.4.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.3</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.4</version>
+            <version>3.12.0</version>
             <configuration>
                 <skip>true</skip>
-                <skipDeploy>true</skipDeploy>
             </configuration>
         </plugin>
       </plugins>
@@ -155,6 +147,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
+        <version>3.3.1</version>
         <configuration>
           <goals>deploy</goals>
         </configuration>
