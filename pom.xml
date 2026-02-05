@@ -28,17 +28,6 @@
     <git.repo.name>spring-boot-thymeleaf</git.repo.name>
   </properties>
 
-  <distributionManagement>
-    <repository>
-      <id>${distributionManagement-internal-released-id}</id>
-      <url>${distributionManagement-internal-released-url}</url>
-    </repository>
-    <snapshotRepository>
-      <id>${distributionManagement-internal-snapshots-id}</id>
-      <url>${distributionManagement-internal-snapshots-url}</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
