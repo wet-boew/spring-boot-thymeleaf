@@ -29,17 +29,6 @@
     <json-path.version>2.9.0</json-path.version>
   </properties>
 
-  <distributionManagement>
-    <repository>
-      <id>${distributionManagement-internal-released-id}</id>
-      <url>${distributionManagement-internal-released-url}</url>
-    </repository>
-    <snapshotRepository>
-      <id>${distributionManagement-internal-snapshots-id}</id>
-      <url>${distributionManagement-internal-snapshots-url}</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <dependencies>
     <dependency>
       <groupId>jakarta.servlet</groupId>
