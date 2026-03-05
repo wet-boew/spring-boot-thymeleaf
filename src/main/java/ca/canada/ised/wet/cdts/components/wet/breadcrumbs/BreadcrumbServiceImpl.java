@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +20,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import ca.canada.ised.wet.cdts.components.wet.config.WETModelKey;
 import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
@@ -296,7 +296,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
      */
     private Object checkAcronym(BreadCrumb breadCrumb) {
 
-        if (StringUtils.isEmpty(breadCrumb.getAcronym())) {
+        if (!StringUtils.hasText(breadCrumb.getAcronym())) {
             BreadCrumbLink breadCrumbLink = new BreadCrumbLink();
             BeanUtils.copyProperties(breadCrumb, breadCrumbLink);
             return breadCrumbLink;

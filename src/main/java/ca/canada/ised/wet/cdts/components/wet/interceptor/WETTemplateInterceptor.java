@@ -3,7 +3,6 @@ package ca.canada.ised.wet.cdts.components.wet.interceptor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -80,7 +80,7 @@ public class WETTemplateInterceptor implements AsyncHandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
                            ModelAndView modelAndView) {
 
-        if (null != modelAndView && StringUtils.isNotBlank(modelAndView.getViewName())) {
+        if (null != modelAndView && StringUtils.hasText(modelAndView.getViewName())) {
 
             LOG.debug("---Post Method Execution---postHandle() " + request.getServletPath() + ", "
                 + modelAndView.getViewName());
@@ -126,10 +126,10 @@ public class WETTemplateInterceptor implements AsyncHandlerInterceptor {
         String privacyUrl = cdnSettings.getPrivacy().getUrl();
         String termsUrl = cdnSettings.getTerms().getUrl();
 
-        if (StringUtils.isNotBlank(privacyUrl)) {
+        if (StringUtils.hasText(privacyUrl)) {
             modelAndView.addObject(WETModelKey.PRIVACY_LINK.wetAttributeName(), privacyUrl);
         }
-        if (StringUtils.isNotBlank(termsUrl)) {
+        if (StringUtils.hasText(termsUrl)) {
             modelAndView.addObject(WETModelKey.TERMS_LINK.wetAttributeName(), termsUrl);
         }
 
@@ -144,7 +144,7 @@ public class WETTemplateInterceptor implements AsyncHandlerInterceptor {
      */
     private void setContactInformation(WETSettings cdnSettings, ModelAndView modelAndView, HttpServletRequest request) {
         String contactHref = cdnSettings.getContact().getUrl();
-        if (StringUtils.isNotBlank(contactHref)) {
+        if (StringUtils.hasText(contactHref)) {
             List<ContactInformation> contactInformationList = new ArrayList<>();
             ContactInformation contactInformation = new ContactInformation();
 
@@ -252,7 +252,7 @@ public class WETTemplateInterceptor implements AsyncHandlerInterceptor {
                 .append(cdnSettings.getSession().getReactiontime().getValue());
             dataWbSessionTo.append(",").append("\"sessionalive\":")
                 .append(cdnSettings.getSession().getSessionalive().getValue());
-            if (StringUtils.isNotBlank(cdnSettings.getSession().getRefreshcallbackurl())) {
+            if (StringUtils.hasText(cdnSettings.getSession().getRefreshcallbackurl())) {
                 dataWbSessionTo.append(",").append("\"refreshCallbackUrl\": ").append("\"")
                     .append(cdnSettings.getSession().getRefreshcallbackurl()).append("\"");
             }
@@ -264,11 +264,11 @@ public class WETTemplateInterceptor implements AsyncHandlerInterceptor {
                 dataWbSessionTo.append(",").append("\"refreshLimit\": ")
                     .append(cdnSettings.getSession().getRefreshlimit().getValue());
             }
-            if (StringUtils.isNotBlank(cdnSettings.getSession().getMethod())) {
+            if (StringUtils.hasText(cdnSettings.getSession().getMethod())) {
                 dataWbSessionTo.append(",").append("\"method\":").append("\"")
                     .append(cdnSettings.getSession().getMethod()).append("\"");
             }
-            if (StringUtils.isNotBlank(cdnSettings.getSession().getAdditionaldata())) {
+            if (StringUtils.hasText(cdnSettings.getSession().getAdditionaldata())) {
                 dataWbSessionTo.append(",").append("\"additionalData\":").append("\"")
                     .append(cdnSettings.getSession().getAdditionaldata()).append("\"");
             }
