@@ -30,6 +30,7 @@
     <!-- TODO remove when moving to spring boot 4 -->
     <commons-lang3.version>3.20.0</commons-lang3.version>
     <jackson-bom.version>2.21.6</jackson-bom.version>
+    <log4j2.version>2.25.5</log4j2.version>
   </properties>
 
   <dependencies>
